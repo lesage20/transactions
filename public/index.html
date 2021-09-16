@@ -1,17 +1,24 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="fr">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css" type="style/css">
+    <style>
+      .bg-gray {
+        background-color: rgb(238, 236, 236) !important;
+      }
+    </style>
   </head>
-  <body>
+
+  <body class="bg-gray">
     <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <strong>Nous sommes désolé mais <%= htmlWebpackPlugin.options.title %> ne fonctionne pas sans javascript activé. Svp activez le pour continuer.</strong>
     </noscript>
-    <div id="app"></div>
+    <div class="container py-2 px-lg-5 px-md-0 px-sm-2" id="app"></div>
     <!-- built files will be auto injected -->
   </body>
 </html>
