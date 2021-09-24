@@ -37,6 +37,14 @@ const magasinSchema = new Schema({
         type: String,
         required: true
     },
+    ville: {
+        type: String,
+        required: true
+    },
+    addresse: {
+        type: String,
+        required: true
+    },
     gerants: [ gerantSchema ],
     pisteurs: [ pisteurSchema ],
     solde: {
@@ -46,8 +54,10 @@ const magasinSchema = new Schema({
 
 
 }, {timestamps: true})
-magasinSchema.index({"$**": 'text'})
-
-module.exports = mongoose.model('magasins', magasinSchema)
+// magasinSchema.index({"nom": 'text', "code":"text", "createdAt": "text"})
+magasinSchema.index({"$**":"text"})
+var Magasin = mongoose.model('magasins', magasinSchema)
+module.exports = Magasin
+Magasin.createIndexes()
 
 

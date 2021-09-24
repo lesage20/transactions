@@ -33,3 +33,4 @@ const transactionSchema = new Schema({
 }, {timestamps: true})
 transactionSchema.index({"$**": 'text'})
 module.exports = mongoose.model('transactions', transactionSchema)
+mongoose.model('transactions', transactionSchema).createIndexes()

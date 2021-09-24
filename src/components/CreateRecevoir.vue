@@ -1,8 +1,5 @@
 <template>
-  <div class="row shadow-sm rounded bg-white p-4 my-4">
-    <h5 class="text-center">
-      Recevoir de l'argent d'un exportateur
-    </h5>
+  <div class="row shadow-sm bg-white">
     <form >
     <div class="form-group p-2">
       <label for="montant">Montant </label>
@@ -59,7 +56,9 @@ export default {
         })
         .then((res) => {
           console.log('succès: ', res)
-          this.$store.commit('ajouter', this.montant)
+          this.$store.commit('ajouter',  { somme: this.montant, etat:'principal' })
+          this.$store.commit('ajouter', { somme: this.montant, etat:'recu' })
+          
           
           window.models.Exportateur.findOne({id: this.exportateur})
           .then((doc)=>{

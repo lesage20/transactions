@@ -1,47 +1,80 @@
 <template>
-<div id="List" class="animate__animated animate__fadeInUp row bg-white shadow-sm rounded-bottom p-2">
+<div>
+    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"> <i class="bi bi-pencil-square"></i> Modification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form @submit.prevent>
+                        <div class="form-group p-2">
+                            <label for="nom">Nom </label>
+                            <input v-model="currentGer.nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom de l'exportateur">
+                        </div>
+                        <div class="form-group p-2">
+                            <label for="prenom">Prenoms</label>
+                            <input v-model="currentGer.prenom" type="text" class="form-control" id="prenom" placeholder="Entrez le/les prenom(s) de l'exportateur">
+                        </div>
+                        <div class="form-group p-2">
+                            <label for="addresse">Addresse de l'exportateur</label>
+                            <input v-model="currentGer.addresse" type="text" class="form-control" id="addresse" placeholder="Entrez  l'addresse de l'exportateur">
+                        </div>
+                        <div class="form-group p-2">
+                            <label for="telephone">Numero de telephone de l'exportateur</label>
+                            <input v-model="currentGer.telephone" type="text" class="form-control" id="telephone" placeholder="Entrez le numero de telephone de l'exportateur">
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Modifier <i class="bi bi-pencil-square"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" tabindex="-1" id="gerantModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
 
             <div class="modal-content">
                 <div class="modal-header ">
-                    <h4 class="modal-title ps-5 text-center text-primary" v-if="modalAction=='detail'"> <i class="bi bi-info-circle-fill text-info"></i> Détails Pisteur: {{currentPist.nom}} {{currentPist.prenom}} </h4>
+                    <h4 class="modal-title  text-center text-primary" v-if="modalAction=='detail'"> <i class="bi bi-info-circle-fill text-info"></i> Détails Pisteur: {{currentGer.nom}} {{currentGer.prenom}} </h4>
                     <h4 class="modal-title  text-center text-warning" v-if="modalAction=='delete'"> <i class="bi bi-exclamation-octagon-fill text-warning"></i> Supprimer un Pisteur </h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row d-flex justify-content-around" v-if="modalAction=='detail'">
-                        <div class="p-2  bg-gray  text-start rounded col-md-10">
-                            <h5 class="text-center mt-1">
-                                Informations basics
-                            </h5>
-                            <hr>
-                            <div class="d-flex justify-content-start flex-wrap">
-                                <div class="col-md-4">
-                                    Nom : {{currentPist.nom}}
-                                </div>
-                                <div class="col-md-4">
-                                    Prenom : {{currentPist.prenom}}
-                                </div>
-                                <div class="col-md-4">
-                                    N° CNI : {{currentPist.nb_cni}}
-                                </div>
-                                <div class="col-md-4">
-                                    Telephone : {{currentPist.telephone}}
-                                </div>
-                                <div class="col-md-4">
-                                    Statut : {{currentPist.statut}}
-                                </div>
-                                <div v-if="currentPist.statut == 'dependant'">
-                                    magasin: {{currentPist.magasin}}
-                                </div>
-                                Solde:
+                        <div class="p-2  fs-3   rounded col-md-10">
+
+                            <div>
+                                Nom : {{currentGer.nom}}
                             </div>
+                            <div>
+                                Prenom : {{currentGer.prenom}}
+                            </div>
+                            <div>
+                                N° CNI : {{currentGer.nb_cni}}
+                            </div>
+                            <div>
+                                Telephone : {{currentGer.telephone}}
+                            </div>
+                            <div>
+                                Statut : {{currentGer.statut}}
+                            </div>
+                            <div v-if="currentGer.statut == 'dependant'">
+                                magasin: {{currentGer.magasin}}
+                            </div>
+                            <div>
+                                Solde: {{currentGer.solde}} FCFA
+                            </div>
+
                         </div>
 
                     </div>
                     <div class="row p-2" v-if="modalAction=='delete'">
-                        <p class="">
+                        <p>
                             {{ modalText }}
                         </p>
                     </div>
@@ -50,7 +83,7 @@
 
                 <div class="modal-footer" v-if="modalAction=='delete'">
                     <button type="button" class="btn btn-secondary px-2" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" @click="deletePisteur(currentPist)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
+                    <button type="button" @click="deletePisteur(currentGer)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
                 </div>
             </div>
         </div>
@@ -71,10 +104,30 @@
                 {{alertMessage}}
             </p>
         </div>
+        <div class="d-flex justify-content-between m-0 pe-5 py-0">
+                <div class="col-md-3">
+                    <div>
+                    <small >Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone</small>
+                        <input @keyup="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechercher un exportateur ...">
+
+                    </div>
+
+                </div>
+                <div class="col-md-3">
+                    <small >Rechechez un exportateur selon la date a laquelle vous l'avez ajouter</small>
+                    <input @change="getExportateurList(searchDate)" v-model="searchDate" type="date" name="search-by-date" id="search-by-date" class="form-control " placeholder="Rechercher un exportateur ..">
+
+                </div>
+                <div>
+                    <p>
+                        Total: {{gerantCounter}}
+                    </p>
+                </div>
+            </div>
 
         <ol class="list-group list-group-flush mt-2 ">
 
-            <li class="list-group-item d-flex justify-content-between align-items-start bg-light" v-for="pist in pisteurs" :key="pist.nom">
+            <li class="list-group-item d-flex justify-content-between align-items-start bg-light" v-for="pist in gerants" :key="pist.nom">
                 <div class="p-3 me-auto">
                     {{pist.nom}} {{pist.prenom}}
 
@@ -113,7 +166,8 @@ export default {
     mixins: [MagasinMixin],
     data() {
         return {
-            currentPist: {},
+            currentGer: {},
+            gerants: [],
             modalAction: 'detail',
             modalText: '',
             alertMessage: null,
@@ -126,31 +180,28 @@ export default {
     },
     created() {
         this.getMagasinList()
-        this.getPisteurList()
-
+        setTimeout(() => {
+        this.getGerantList()
+        },150)
     },
     computed: {
-        pisteurCounter() {
-            return this.pisteurs.length()
+        gerantCounter() {
+            return this.gerants.length
         }
     },
     methods: {
-        getPisteurList() {
-            window.models.Pisteur.find({})
-                .then((docs) => {
-                    this.pisteurs = docs
-
-                    for (var i in this.magasins) {
-
-                        this.magasins[i].pisteurs.forEach(pist => {
-                            pist.magasin = this.magasins[i].nom
-                            this.pisteurs.push(pist)
-                        })
-                    }
+        getGerantList() {            
+                 this.magasins.forEach((el) => {
+                    el.gerants.forEach((ger) => {
+                        this.gerants.push(ger)
+                    })
+                    
                 })
-                .catch(err => {
-                    console.log(err)
+                this.gerants.forEach((el) => {
+                    console.log(el)
                 })
+            
+
         },
         launchModal() {
             var myModal = document.getElementById('gerantModal')
@@ -173,7 +224,7 @@ export default {
         infoPisteur(pist) {
             this.modalAction = 'detail'
 
-            this.currentPist = pist
+            this.currentGer = pist
             this.launchModal()
         },
         deletePisteur(pist, msg) {
@@ -181,7 +232,7 @@ export default {
 
             if (msg == 'warnDeletion') {
                 this.modalText = 'Vous êtes sur le point de supprimer un pisteur. êtes vous sur de vouloir le faire? cette action est irreversible'
-                this.currentPist = pist
+                this.currentGer = pist
                 this.launchModal()
             } else if (!msg) {
                 if (pist.nom && (pist.magasin == undefined)) {
@@ -195,7 +246,7 @@ export default {
                             this.alertMessage = 'Pisteur supprimé avec succès.'
                             this.operation.status = true
                             this.getMagasinList()
-                            this.getPisteurList()
+                            this.getGerantList()
                         })
                         .catch((err) => {
                             this.alertMessage = "Impossible de supprimer le pisteur une erreur s'est produite."
@@ -219,7 +270,7 @@ export default {
                                     this.alertMessage = 'Pisteur supprimé avec succès.'
                                     this.operation.status = true
                                     this.getMagasinList()
-                                    this.getPisteurList()
+                                    this.getGerantList()
                                 }
                             })
 

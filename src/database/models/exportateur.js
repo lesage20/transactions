@@ -24,7 +24,8 @@ const exportateurSchema = new Schema({
     }
 
 }, {timestamps: true})
-exportateurSchema.index({"$**": 'text'})
+exportateurSchema.index({"$**": 'text', "createdAt": 'text'})
 // module.exports = exportateurSchema
-
-module.exports = mongoose.model('exportateurs', exportateurSchema)
+Exportateur = mongoose.model('exportateurs', exportateurSchema)
+module.exports = Exportateur
+Exportateur.createIndexes()

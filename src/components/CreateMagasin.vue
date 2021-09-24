@@ -27,6 +27,14 @@
             <label for="code">Code du Magasin</label>
             <input v-model="code" type="text" class="form-control" id="code" placeholder="Entrez le code du magasin">
         </div>
+        <div class="form-group p-2">
+            <label for="ville">Ville du Magasin</label>
+            <input v-model="ville" type="text" class="form-control" id="ville" placeholder="Entrez la ville ou le magasin se situe">
+        </div>
+        <div class="form-group p-2">
+            <label for="addresse">Addresse du Magasin</label>
+            <input v-model="addresse" type="text" class="form-control" id="addresse" placeholder="Entrez l'addresse du magasin">
+        </div>
 
         <div class="form-group p-2 d-flex justify-content-end">
             <div>
@@ -47,6 +55,8 @@ export default {
         return {
             nom: null,
             code: null,
+            ville: null,
+            addresse: null,
             // nb_pisteur: 0,
             modalText: null,
             
@@ -60,8 +70,9 @@ export default {
 
             window.models.Magasin.create({
                 nom: this.nom,
-                // nb_pisteur: this.nb_pisteur,
+                ville: this.ville,
                 code: this.code,
+                addresse: this.addresse,
                 solde: 0
             }).then((res) => {
                 console.log(res)

@@ -39,7 +39,7 @@
 
         <div class="form-group p-2 d-flex justify-content-end">
             <div>
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="submit" class="btn btn-primary">Enregistrer <i class="bi bi-save2"></i></button>
             </div>
 
         </div>

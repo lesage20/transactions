@@ -1,29 +1,37 @@
 <template>
-<div >
-    
+<div>
 
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modifier</h5>
+                    <h5 class="modal-title" id="exampleModalLabel"> <i class="bi bi-pencil-square"></i> Modification</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label for="recipient-name" class="col-form-label">Recipient:</label>
-                            <input type="text" class="form-control" id="recipient-name">
+                    <form @submit.prevent="createExportateur">
+                        <div class="form-group p-2">
+                            <label for="nom">Nom </label>
+                            <input v-model="currentExp.nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom de l'exportateur">
                         </div>
-                        <div class="mb-3">
-                            <label for="message-text" class="col-form-label">Message:</label>
-                            <textarea class="form-control" id="message-text"></textarea>
+                        <div class="form-group p-2">
+                            <label for="prenom">Prenoms</label>
+                            <input v-model="currentExp.prenom" type="text" class="form-control" id="prenom" placeholder="Entrez le/les prenom(s) de l'exportateur">
                         </div>
+                        <div class="form-group p-2">
+                            <label for="addresse">Addresse de l'exportateur</label>
+                            <input v-model="currentExp.addresse" type="text" class="form-control" id="addresse" placeholder="Entrez  l'addresse de l'exportateur">
+                        </div>
+                        <div class="form-group p-2">
+                            <label for="telephone">Numero de telephone de l'exportateur</label>
+                            <input v-model="currentExp.telephone" type="text" class="form-control" id="telephone" placeholder="Entrez le numero de telephone de l'exportateur">
+                        </div>
+
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Send message</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" @click.prevent="editExp(currentExp)" class="btn btn-primary">Modifier <i class="bi bi-pencil-square"></i></button>
                 </div>
             </div>
         </div>
@@ -56,6 +64,10 @@
                             <div>
 
                                 Solde : {{currentExp.solde}} FCFA
+                            </div>
+                            <div>
+
+                                Modifier : {{currentExp.updatedAt}} 
                             </div>
 
                         </div>
@@ -94,18 +106,51 @@
             </p>
         </div>
         <div>
-            <div class="d-flex justify-content-end m-0 px-5 py-0">
+            <div class="d-flex justify-content-between m-0 pe-5 py-0">
+                <div class="col-md-3">
+                    <div>
+                    <small >Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone</small>
+                        <input @keyup="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechercher un exportateur ...">
+
+                    </div>
+
+                </div>
+                <div class="col-md-3">
+                    <small >Rechechez un exportateur selon la date a laquelle vous l'avez ajouter</small>
+                    <input @change="getExportateurList(searchDate)" v-model="searchDate" type="date" name="search-by-date" id="search-by-date" class="form-control " placeholder="Rechercher un exportateur ..">
+
+                </div>
                 <div>
                     <p>
                         Total: {{exportateurCounter}}
                     </p>
                 </div>
             </div>
-            <ol class="list-group list-group-flush mt-2 ">
+            <ol class="list-group list-group-flush mt-2 border rounded">
+                <li class="list-group-item d-flex justify-content-between align-items-start ">
+                    <div class="p-3 me-auto d-flex col-md-10 justify-content-start text-start">
+                        <div class="col-md-4 border-end px-2 fs-5 border-end">Nom et Prenom</div>
 
-                <li class="list-group-item d-flex justify-content-between align-items-start bg-light" v-for="exp in exportateurs" :key="exp.nom">
-                    <div class="p-3 me-auto">
-                        {{exp.nom}} {{exp.prenom}}
+                        <div class="col-md-3 px-2 fs-5 border-end">Addresse</div>
+                        <div class="col-md-3 px-2 fs-5 border-end">Telephone</div>
+                        <div class="col-md-3 px-2 fs-5 border-end">Solde</div>
+
+                    </div>
+                    <div class="p-3 col-md-2 ">
+                        <div class="text-center px-2 fs-5">
+                            Actions
+                        </div>
+
+                    </div>
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between align-items-start " v-for="exp in exportateurs" @dblclick="infoExportateur(exp)" :key="exp.nom">
+                    <div class="p-3 me-auto d-flex col-md-10 justify-content-start text-start">
+                        <div class="col-md-4 px-2 ">{{exp.nom}} {{exp.prenom}}</div>
+
+                        <div class="col-md-3 px-2 ">{{exp.addresse}}</div>
+                        <div class="col-md-3 px-2 ">{{exp.telephone}}</div>
+                        <div class="col-md-3 px-2 ">{{exp.solde}}</div>
 
                     </div>
                     <div class="d-flex p-2">
@@ -115,7 +160,7 @@
                             </button>
                         </div>
                         <div class="mx-1">
-                            <button class="btn text-primary">
+                            <button @click="launchModal(exp, 'update')" class="btn text-primary">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
                         </div>
@@ -144,6 +189,8 @@ export default {
     mixins: [MagasinMixin],
     data() {
         return {
+            search: '',
+            searchDate: new Date(),
             currentExp: {},
             modalAction: 'detail',
             modalText: '',
@@ -155,8 +202,16 @@ export default {
             Exportateurs: [],
         }
     },
+    watch : {
+        currentExp () {
+            if (this.currentExp) {
+                this.currentExp.createdAt =  this.currentExp.createdAt.toLocaleDateString()
+            }
+        }
+    },
     created() {
         this.getExportateurList()
+        console.log(this.searchDate)
     },
     computed: {
         exportateurCounter() {
@@ -165,7 +220,22 @@ export default {
     },
     methods: {
 
-        launchModal(name) {
+        editExp(exp) {
+            console.log(exp)
+            window.models.Exportateur.findOne({_id: exp._id}, (err, doc)=>{
+                if (err) {
+                    console.log(err) 
+                    return 
+                }
+                doc.nom = this.currentExp.nom
+                doc.prenom = this.currentExp.prenom
+                doc.addresse = this.currentExp.addresse
+                doc.telephone = this.currentExp.telephone
+                doc.save()
+                console.log('modifier avec succes')
+            })
+        },
+        launchModal(exp, name) {
             if (!name) {
                 let myModal = document.getElementById('exportateurModal')
                 const exportateurModal = new bootstrap.Modal(myModal, {
@@ -178,6 +248,7 @@ export default {
                 const updateModal = new bootstrap.Modal(myModal, {
                     keyboard: false
                 })
+                this.currentExp = exp
                 updateModal.show()
 
             }
@@ -200,10 +271,10 @@ export default {
                 this.launchModal()
             } else if (!msg) {
                 window.models.Exportateur.deleteOne({
-                        nom: exp.nom
+                        _id: exp._id
                     })
                     .then((res) => {
-                        this.hideModal()
+                        
                         console.log(res)
                         this.alertMessage = 'Exportateur supprimé avec succès.'
                         this.operation.status = true
@@ -231,5 +302,9 @@ export default {
 
 .bg-gray {
     background-color: rgb(238, 236, 236) !important;
+}
+
+.btn-outline-secondary {
+    border: 1px solid rgb(185, 183, 183) !important;
 }
 </style>

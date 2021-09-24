@@ -1,22 +1,22 @@
 <template>
 <div>
     <div class="row bg-white p-4  shadow-sm">
-        <h5 class="text-center" v-if="action == 'ajouter'">Ajouter un Magasin</h5>
-        <h5 class="text-center" v-else>Liste des magasin</h5>
+        <h5 class="text-center" v-if="action == 'ajouter'">Recevoir de l'argent d'un exportateur</h5>
+        <h5 class="text-center" v-else>Liste des sommes recues</h5>
         <div class="d-flex justify-content-center">
             <div class="btn-group text-center  ">
                  <button @click="editAction('lister')" class="btn btn-primary"> <i class="bi bi-list"></i> Lister </button>
-                <button @click="editAction('ajouter')" class="btn btn-success"> <i class="bi bi-plus-lg"></i> Ajouter </button> <!-- data-bs-toggle='collapse' data-bs-target='#Ajout' -->
+                <button @click="editAction('ajouter')" class="btn btn-success"> <i class="bi bi-plus-lg"></i> Recevoir </button> <!-- data-bs-toggle='collapse' data-bs-target='#Ajout' -->
             </div>
         </div>
     </div>
     <transition enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__fadeOutDown" mode="out-in">
         <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-if="action == 'ajouter'">
-            <CreateMagasin />
+            <CreateRecevoir />
         </div>
 
         <div id="Lister" class=" row bg-white shadow-sm rounded-bottom " v-else>
-            <ListMagasin />
+            <ListRecevoir />
         </div>
     </transition>
 </div>
@@ -24,20 +24,18 @@
 
 <script>
 // const bootstrap = require('bootstrap')
-import CreateMagasin from '@/components/CreateMagasin.vue'
-import ListMagasin from '@/components/ListMagasin.vue'
+import CreateRecevoir from '@/components/CreateRecevoir.vue'
+import ListRecevoir from '@/components/ListRecevoir.vue'
 export default {
     /* eslint-env mongoose */
-    name: 'Magasin',
+    name: 'Recevoir',
     components: {
-        CreateMagasin,
-        ListMagasin,
+        CreateRecevoir,
+       ListRecevoir,
     },
     data() {
         return {
-
             action: 'lister'
-
         }
     },
 

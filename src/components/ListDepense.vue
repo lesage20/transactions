@@ -1,5 +1,6 @@
 <template>
 <div class="p-2 ">
+    
     <div class="modal fade" tabindex="-1" id="depenseModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
 
@@ -12,7 +13,7 @@
                 <div class="modal-body">
                     <div class="row d-flex justify-content-around" v-if="modalAction=='detail'">
                         <div class="p-2  fs-3   rounded col-md-10">
-                           
+
                             <div class=" justify-content-center text-center">
                                 <div class="">
                                     Motif : {{currentDep.motif}}
@@ -169,9 +170,9 @@ export default {
                 // })
 
                 this.currentDep.populate('magasin')
-                .then((res)=>{
-                    console.log(res)
-                })
+                    .then((res) => {
+                        console.log(res)
+                    })
 
             }
             this.launchModal()
@@ -187,7 +188,7 @@ export default {
 
                 this.launchModal()
             } else if (!msg) {
-                if (dep.motif   ) {
+                if (dep.motif) {
                     this.operation.nom = 'delete'
                     window.models.Depense.deleteOne({
                             _id: dep._id

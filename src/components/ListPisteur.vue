@@ -1,5 +1,6 @@
 <template>
 <div>
+   
     <div class="modal fade" tabindex="-1" id="pisteurModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
 
@@ -12,36 +13,34 @@
                 <div class="modal-body">
                     <div class="row d-flex justify-content-around" v-if="modalAction=='detail'">
                         <div class="p-2  fs-3   rounded col-md-10">
-                           
-                            
-                                <div >
-                                    Nom : {{currentPist.nom}}
-                                </div>
-                                <div >
-                                    Prenom : {{currentPist.prenom}}
-                                </div>
-                                <div >
-                                    N° CNI : {{currentPist.nb_cni}}
-                                </div>
-                                <div >
-                                    Telephone : {{currentPist.telephone}}
-                                </div>
-                                <div >
-                                    Statut : {{currentPist.statut}}
-                                </div>
-                                <div v-if="currentPist.statut == 'dependant'">
-                                    magasin: {{currentPist.magasin}}
-                                </div>
-                                <div>
-                                    Solde: {{currentPist.solde}} FCFA
-                                </div>
-                                
-                            
+
+                            <div>
+                                Nom : {{currentPist.nom}}
+                            </div>
+                            <div>
+                                Prenom : {{currentPist.prenom}}
+                            </div>
+                            <div>
+                                N° CNI : {{currentPist.nb_cni}}
+                            </div>
+                            <div>
+                                Telephone : {{currentPist.telephone}}
+                            </div>
+                            <div>
+                                Statut : {{currentPist.statut}}
+                            </div>
+                            <div v-if="currentPist.statut == 'dependant'">
+                                magasin: {{currentPist.magasin}}
+                            </div>
+                            <div>
+                                Solde: {{currentPist.solde}} FCFA
+                            </div>
+
                         </div>
 
                     </div>
                     <div class="row p-2" v-if="modalAction=='delete'">
-                        <p >
+                        <p>
                             {{ modalText }}
                         </p>
                     </div>

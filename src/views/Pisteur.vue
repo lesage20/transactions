@@ -1,24 +1,23 @@
 <template>
 <div>
-    <div class="row bg-white p-4 mt-2 rounded-top shadow-sm">
+    <div class="row bg-white p-4  rounded-top shadow-sm">
         <h5 class="text-center" v-if="action == 'ajouter'">Ajouter un Pisteur</h5>
         <h5 class="text-center" v-else>Liste des pisteurs</h5>
         <div class="d-flex justify-content-center">
-            <div class="btn-group text-center  ">
-                <button @click="editAction('lister')" class="btn btn-primary">Lister</button><button @click="editAction('ajouter')" class="btn btn-success">Ajouter</button>
+            <div class="btn-group text-center">
+                <button @click="editAction('lister')" class="btn btn-primary"> <i class="bi bi-list"></i> Lister </button>
+                <button @click="editAction('ajouter')" class="btn btn-success"> <i class="bi bi-plus-lg"></i> Ajouter </button> <!-- data-bs-toggle='collapse' data-bs-target='#Ajout' -->
             </div>
         </div>
 
     </div>
 
-    <transition enter-to-class="animate__animated animate__zoomIn" leave-to-class="animate__animated animate__slideOutDown ">
-        <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-show="action == 'ajouter'">
+    <transition mode="out-in" enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__fadeOutDown ">
+        <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-if="action == 'ajouter'">
             <CreatePisteur />
         </div>
-    </transition>
 
-    <transition enter-to-class="animate__animated animate__zoomIn" leave-to-class="animate__animated animate__slideOutDown">
-        <div id="Lister" class=" row bg-white shadow-sm rounded-bottom p-2" v-show="action == 'lister'">
+        <div id="Lister" class=" row bg-white shadow-sm rounded-bottom p-2" v-else>
             <ListPisteur />
         </div>
     </transition>

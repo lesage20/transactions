@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="row bg-white p-4 mt-2 rounded-top shadow-sm">
+    <div class="row bg-white p-4   shadow-sm">
         <h5 class="text-center" v-if="action=='ajouter'">Ajouter une Depense</h5>
         <h5 class="text-center" v-else>Historique de Depenses</h5>
         <div class="d-flex justify-content-center">
@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    <transition enter-to-class="animate__animated animate__zoomIn" leave-to-class="animate__animated animate__slideOutDown ">
+    <transition enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__slideOutDown ">
         <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-show="action == 'ajouter'">
             <CreateDepense />
         </div>

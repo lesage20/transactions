@@ -6,7 +6,7 @@ import Chargement from '@/components/Chargement.vue'
 import Magasin from '@/views/Magasin.vue'
 import Gerant from '@/views/Gerant.vue'
 import Exportateur from '@/views/Exportateur.vue'
-import Recevoir from '@/components/Recevoir.vue'
+import Recevoir from '@/views/Recevoir.vue'
 
 
 

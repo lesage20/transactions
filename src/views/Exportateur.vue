@@ -1,24 +1,22 @@
 <template>
 <div>
-    <div class="row bg-white p-4 mt-2 rounded-top shadow-sm">
+    <div class="row bg-white p-2 shadow-sm">
         <h5 class="text-center" v-if="action == 'ajouter'">Ajouter un Exportateur</h5>
         <h5 class="text-center" v-else>Liste des Exportateurs</h5>
         <div class="d-flex justify-content-center">
             <div class="btn-group text-center  ">
-                <button @click="editAction('lister')" class="btn btn-primary">Lister</button>
-                <button @click="editAction('ajouter')" class="btn btn-success">Ajouter</button> <!-- data-bs-toggle='collapse' data-bs-target='#Ajout' -->
+                <button @click="editAction('lister')" class="btn btn-primary"> <i class="bi bi-list"></i> Lister </button>
+                <button @click="editAction('ajouter')" class="btn btn-success"> <i class="bi bi-plus-lg"></i> Ajouter </button> <!-- data-bs-toggle='collapse' data-bs-target='#Ajout' -->
 
             </div>
         </div>
     </div>
 
-    <transition enter-to-class="animate__animated animate__zoomIn" leave-to-class="animate__animated animate__slideOutDown">
+    <transition mode="out-in" enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__fadeOutDown" appear>
         <div id="Lister" class=" row bg-white shadow-sm rounded-bottom p-2" v-if="action == 'lister'">
             <ListExportateur />
         </div>
-    </transition>
-    <transition enter-to-class="animate__animated animate__zoomIn" leave-to-class="animate__animated animate__slideOutDown ">
-        <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-if="action == 'ajouter'">
+        <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-else>
             <CreateExportateur />
         </div>
     </transition>
@@ -137,24 +135,12 @@ export default {
 }
 </script>
 
+
 <style>
-/* .animate__animated.animate__zoomInDown {
-    --animate-duration: 1.5s;
-}
-
-.animate__animated.animate__zoomInUp {
-    --animate-duration: 1.5s;
-} */
-
-.animate__animated.animate__zoomIn {
+.animate__animated.animate__zoomIn{
     animation-duration: 1s;
 }
-
-.animate__animated.animate__slideOutDown {
-    animation-duration: 200ms;
-}
-
-.animate__animated.animate__zoomOut {
-    animation-duration: 100ms;
+.animate__animated.animate__fadeOutDown{
+    animation-duration: .7s;
 }
 </style>

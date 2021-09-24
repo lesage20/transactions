@@ -1,5 +1,5 @@
 <template>
-<div class="row bg-white p-4  rounded shadow-sm">
+<div class="row bg-white p-4   shadow-sm">
     <div class="modal" tabindex="-1" id="ChargementModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -71,10 +71,10 @@ export default {
         return {
             nb_fiche: null,
             date: null,
-            poid_brut: 0,
-            nb_sac: 0,
-            poid_net: 0,
-            prix_kg: 0,
+            poid_brut: null,
+            nb_sac: null,
+            poid_net: null,
+            prix_kg: null,
             modalText: null,
 
         }
@@ -141,10 +141,5 @@ export default {
 </script>
 
 <style scoped>
-    .btn-primary {
-        /* background-color: rgb(64, 64, 196);
-        border:rgb(64, 64, 196); */
-
-
-    }
+   
 </style>

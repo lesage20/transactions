@@ -101,10 +101,17 @@ export default {
     created() {
         this.getMagasinList()
         this.getIndependantPisteurList()
+
     },
     methods: {
         createDepense() {
+            if (this.$store.state.solde_principal < this.montant) {
+                this.modalText = "Votre solde est insuffisant pour effectuer cette transaction"
+                this.launchModal('echec')
+                return
+            }
             if (this.depenseur == 'magasin') {
+
                 window.models.Depense.create({
                         motif: this.motif,
                         montant: this.montant,
@@ -114,7 +121,14 @@ export default {
 
                     .then((res) => {
                         console.log(res)
-
+                        this.$store.commit('deduire', {
+                            somme: this.montant,
+                            etat: 'principal'
+                        })
+                        this.$store.commit('ajouter', {
+                            somme: this.montant,
+                            etat: 'depense'
+                        })
                         this.modalText = 'Depense crée avec succès'
                         this.launchModal('succes')
                         this.motif = ''
