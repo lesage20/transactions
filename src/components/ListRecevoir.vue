@@ -10,19 +10,19 @@
                 <div class="modal-body">
                     <form @submit.prevent>
                         <div class="form-group p-2">
-                            <label for="nom">Nom </label>
-                            <input v-model="currentRecep.montant" type="number" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du magasin">
+                            <label for="montant">Montant </label>
+                            <input v-model="currentRecep.montant" type="number" class="form-control" id="montant" aria-describedby="nameHelp" placeholder="Entrez le montant recu">
                         </div>
 
                         <div class="form-group p-2">
-                            <label for="code">code du magasin</label>
-                            <input v-model="currentRecep.date" type="date" class="form-control" id="code" placeholder="Entrez  le code du magasin">
+                            <label for="date">Date de reception</label>
+                            <input v-model="currentRecep.date" type="date" class="form-control" id="date" placeholder="Entrez  le date de reception de l'argent">
                         </div>
 
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">J'ai Fini</button>
                     <button type="submit" @click.prevent="editRecep(currentRecep)" class="btn btn-primary">Modifier <i class="bi bi-pencil-square"></i></button>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                     <div class="row d-flex justify-content-start" v-if="modalAction=='detail'">
                         <div class="p-2    mb-3 rounded-end fs-4">
                             <p>
-                                exportateur: {{currentRecep.export}} <br>
+                                exportateur: {{currentRecep.exportateur}} <br>
                                 Montant : {{currentRecep.montant}} FCFA<br>
                                 Date : {{ date }}
 
@@ -75,80 +75,75 @@
         </div>
         <div>
             <div>
-                <div class="d-flex justify-content-between m-0 pe-5 py-0">
-                    <div class="col-md-4">
-                        <div>
-                            <small>Rechechez un magasin par son nom, code, gerant (nom, prenom, numero) ou pisteur (nom, prenom, numero)</small>
-                            <input @keyup.enter="getReceptionList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechercher un exportateur ...">
-
-                        </div>
-
-                    </div>
-                    <div class="col-md-4">
-                        <small>Rechechez un magasin selon la date a laquelle vous l'avez ajouter ou modifier</small>
-                        <input @change="getReceptionList(searchDate)" v-model="searchDate" type="date" name="search-by-date" id="search-by-date" class="form-control " placeholder="Rechercher un exportateur ..">
-
-                    </div>
-                    <div class="col-md-2">
-
-                        <button class="btn btn-outline-secondary mt-5" @click="printReceptionList()">
-                            annuler
+                <div class="d-flex justify-content-end my-1">
+                    <div class="btn-group text-center  shadow-sm rounded">
+                        <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
+                        <button @click="printDocument('list', 'magasins')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                        <button class="btn btn-warning" @click="refresh()">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                        <button class="btn btn-light ">
+                            Total: {{ReceptionCounter}}
                         </button>
                     </div>
-                    <div class="mt-5">
-                        <p class="mt-3">
-                            Total: {{ReceptionCounter}}
-                        </p>
+                </div>
+                <div class="d-flex justify-content-center m-0 p pb-2">
+                    <div class="col-md-8  pe-0">
+                        <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster">
+                            <div v-if="searchBool">
+                                <div class="input-group my-1" v-if="searchBoolStr">
+                                    <input @keyup.enter="getReceptionList(search)" v-model="search" type="text" name="search" id="search" class=" form-control " placeholder="Rechechez un recu selon l'exportateur">
+                                    <div class="input-group-append">
+                                        <input type="submit" class="btn btn-secondary rounded-0 rounded-end" value="Rechercher par date" @click.prevent="searchByDate">
+                                    </div>
+                                </div>
+                                <div class="input-group my-1" v-else-if="searchBoolDate">
+                                    <input @change="getReceptionList(searchDate)" v-model="searchDate" type="date" name="search-by-date" id="search-by-date" class="form-control " placeholder="Rechercher un exportateur ..">
+                                    <div class="input-group-append">
+                                        <input type="submit" class="btn btn-secondary rounded-0 rounded-end" value="Rechercher par exportateur" @click.prevent="searchByDate">
+                                    </div>
+                                </div>
+                            </div>
+                        </transition>
                     </div>
                 </div>
+
             </div>
             <div id="list">
+                <table class="table table-bordered table-hover table-striped">
 
-                <li class="list-group-item d-flex justify-content-between align-items-start bg-light">
-                    <div class="p-3 me-auto d-flex col-md-10 justify-content-start text-start">
-                        <div class="col-md-4 border-end px-2 fs-5 border-end">Nom et Prenom exp</div>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nom et Prenom exp</th>
+                            <th>Montant</th>
+                            <th>Date</th>
+                            <th>Actions</th>
 
-                        <div class="col-md-3 px-2 fs-5 border-end">Montant</div>
+                        </tr>
+                    </thead>
 
-                        <div class="col-md-3 px-2 fs-5 border-end">Date</div>
+                    <transition-group tag="tbody" mode="out-in" name="slide" >
+                        <tr class="" v-for="(recep, index) in receptions" :key="recep._id" @dblclick="infoRecep(recep)">
+                            <td class="col-md-1  px-2 fs-5 ">{{ index + 1 }} </td>
+                            <td class="col-md-4  px-2 fs-5 ">{{ recep.exportateur.nom }} {{ recep.exportateur.prenom }} </td>
+                            <td class="col-md-3 px-2 fs-5 ">{{recep.montant}}</td>
+                            <td class="col-md-2 px-2 fs-5 ">{{recep.date.toLocaleDateString()}}</td>
 
-                    </div>
-                    <div class="p-3 col-md-2 ">
-                        <div class="text-center px-2 fs-5">
-                            Actions
-                        </div>
-
-                    </div>
-                </li>
-                <transition-group tag="ul" mode="out-in" name="slide" class="list-group list-group-flush mt-2 border rounded">
-
-                    <li class="list-group-item d-flex justify-content-between align-items-start " v-for="recep in receptions" :key="recep._id" @dblclick="infoRecep(recep)">
-                        <div class="p-3 me-auto d-flex col-md-10 justify-content-start text-start">
-                            <div class="col-md-4  px-2 fs-5 ">{{ recep.export }} </div>
-
-                            <div class="col-md-3 px-2 fs-5 ">{{recep.montant}}</div>
-
-                            <div class="col-md-3 px-2 fs-5 ">{{recep.date.toLocaleDateString()}}</div>
-                        </div>
-                        <div class="d-flex p-2">
-                            <div class="mx-1">
+                            <td class="col-md-2">
                                 <button @click="infoRecep(recep)" class="btn text-info">
                                     <i class="bi bi-info-circle"></i>
                                 </button>
-                            </div>
-                            <div class="mx-1">
                                 <button @click="launchModal(recep, 'update')" class="btn text-primary">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
-                            </div>
-                            <div class="mx-1">
                                 <button @click="deleteReception(recep, 'warnDeletion')" class="btn text-danger">
                                     <i class="bi bi-trash"></i>
                                 </button>
-                            </div>
-                        </div>
-                    </li>
-                </transition-group>
+                            </td>
+                        </tr>
+                    </transition-group>
+                </table>
             </div>
 
         </div>
@@ -159,14 +154,18 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin = require('../mixins/lists').default
+const printMixin = require('../mixins/printDocument').default
 
 export default {
     name: 'ListMagasin',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin, printMixin],
     data() {
         return {
             currentRecep: {},
+            searchBool: false,
+            searchBoolStr: true,
+            searchBoolDate: false,
             modalAction: 'detail',
             modalText: '',
             operationSucceded: false,
@@ -175,7 +174,7 @@ export default {
                 name: '',
                 status: false
             },
-            receptions: [],
+
         }
     },
     created() {
@@ -194,87 +193,12 @@ export default {
         }
     },
     methods: {
-        printReceptionList() {
-            var prtContent = document.getElementById("list");
-            var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-            WinPrint.document.write(prtContent.innerHTML);
-            WinPrint.document.close();
-            WinPrint.focus();
-            WinPrint.print();
-            WinPrint.close();
+       
+        searchByDate() {
+            this.searchBoolStr = !this.searchBoolStr
+            this.searchBoolDate = !this.searchBoolDate
+
         },
-        getReceptionList(searchString) {
-            if (!searchString) {
-                window.models.Transaction.find({
-                        type: "reception"
-                    })
-                    .populate({
-                        path: 'exportateur',
-                        model: window.models.Exportateur
-                    })
-                    .exec((err, docs) => {
-                        if (err) {
-                            console.log(err)
-                            return
-                        }
-                        docs.forEach(element => {
-                            element.export = docs[0].exportateur.nom + ' ' + docs[0].exportateur.prenom
-                        });
-                        this.receptions = docs
-                        console.log("liste d'receptions recuperée avec succès", docs[0])
-                    })
-
-            } else {
-                let isDate = "Invalid Date"
-                if (searchString.length > 4) {
-                    isDate = new Date(searchString)
-                }
-
-                if (isDate != "Invalid Date") {
-
-                    let DateStart = new Date(searchString + "T00:00:00.015Z").toISOString()
-                    let DateEnd = new Date(searchString + "T23:59:59.999Z").toISOString()
-                    window.models.Transaction.find({
-                            date: {
-                                "$gte": DateStart,
-                                "$lte": DateEnd
-                            },
-                            type: "reception"
-                        })
-                        .then((res) => {
-                            if (res.length) {
-                                this.receptions = res
-
-                                console.log("liste de receptions récupérée")
-                            } else {
-                                alert("Aucune somme recue le " + isDate.toLocaleDateString())
-                            }
-
-                        })
-                        .catch((err) => {
-                            console.log(err)
-
-                        })
-                } else {
-                    window.models.Transaction.find({
-                            $text: {
-                                $search: searchString
-                            },
-
-                        })
-                        .then((res) => {
-                            this.exportateurs = res
-                            console.log("liste d'exportateurs recuperée avec succès")
-
-                        })
-                        .catch((err) => {
-                            console.log(err)
-
-                        })
-                }
-            }
-        },
-
         cancelSearch() {
 
         },

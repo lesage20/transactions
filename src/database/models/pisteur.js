@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema 
+const produitSchema = require('./produit')
 
 const pisteurSchema = new Schema({
     nom: {
@@ -21,10 +22,17 @@ const pisteurSchema = new Schema({
     statut: {
         type: String,
         required: true
-    }
+    },
+    solde: {
+        type: Number,
+        required: true
+    },
+    produits: [produitSchema],
 
-}, {timestamps: true})
+
+}, {timestamps: true, collection: 'pisteur'})
 pisteurSchema.index({"$**": 'text'})
 // module.exports = pisteurSchema
 
-module.exports = mongoose.model('pisteurs', pisteurSchema)
+module.exports = mongoose.model('pisteur', pisteurSchema)
+mongoose.model('pisteur', pisteurSchema).createIndexes()

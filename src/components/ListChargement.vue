@@ -8,36 +8,41 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form @submit.prevent="createExportateur">
+                    <form @submit.prevent>
                         <div class="form-group p-2">
-                            <label for="motif">Motif </label>
-                            <input v-model="currentDep.motif" type="text" class="form-control" id="motif" aria-describedby="nameHelp" placeholder="Entrez le motif de la depense">
+                            <label for="nom">Nom </label>
+                            <input v-model="currentChgt.nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du magasin">
+                        </div>
+
+                        <div class="form-group p-2">
+                            <label for="code">code du magasin</label>
+                            <input v-model="currentChgt.code" type="text" class="form-control" id="code" placeholder="Entrez  le code du magasin">
                         </div>
                         <div class="form-group p-2">
-                            <label for="montant">Montant</label>
-                            <input v-model="currentDep.montant" type="text" class="form-control" id="montant" placeholder="Entrez le/les montant de la depense">
+                            <label for="ville">Ville du Magasin</label>
+                            <input v-model="currentChgt.ville" type="text" class="form-control" id="ville" placeholder="Entrez la ville ou le magasin se situe">
                         </div>
                         <div class="form-group p-2">
-                            <label for="date">Date de depense</label>
-                            <input v-model="currentDep.date" type="date" class="form-control" id="date" placeholder="Entrez  la date a laquelle vouuuuuuuus avez depensé l'argent">
+                            <label for="addresse">Addresse du Magasin</label>
+                            <input v-model="currentChgt.addresse" type="text" class="form-control" id="addresse" placeholder="Entrez l'addresse du magasin">
                         </div>
-                        
 
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">j'ai fini</button>
-                    <button type="submit" @click.prevent="editDep(currentDep)" class="btn btn-primary">Modifier <i class="bi bi-pencil-square"></i></button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" @click.prevent="editMag(currentMag)" class="btn btn-primary">Modifier <i class="bi bi-pencil-square"></i></button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal fade" tabindex="-1" id="depenseModal">
+    <div class="modal fade" tabindex="-1" id="chargementModal">
         <div class="modal-dialog modal-dialog-centered ">
             <div class="modal-content">
                 <div class="modal-header ">
                     <h4 class="modal-title ps-5 text-center text-info" v-if="modalAction=='detail'"><i class="bi bi-info-circle-fill text-info"></i> Détails </h4>
-                    <h4 class="modal-title  text-center text-warning" v-if="modalAction=='delete'"> <i class="bi bi-exclamation-octagon-fill text-warning"></i> Supprimer un Magasin </h4>
+                    <h4 class="modal-title  text-center text-warning" v-if="modalAction=='delete'"> <i class="bi bi-exclamation-octagon-fill text-warning"></i> Supprimer </h4>
+                    <h4 class="modal-title  text-center text-warning" v-if="modalAction=='delete'"> <i class="bi bi-exclamation-octagon-fill text-warning"></i> Avertissement </h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -46,19 +51,32 @@
 
                             <div class=" justify-content-center ">
                                 <div class="">
-                                    Motif : {{currentDep.motif}}
+                                    N° Fiche Chargement : {{currentChgt.nb_fiche}}
+                                </div>
+
+                                <div class="">
+                                    Date : {{currentChgt.date.toLocaleDateString()}}
                                 </div>
                                 <div class="">
-                                    Montant : {{currentDep.montant}} FCFA
+                                    Poid Brut : {{currentChgt.poid_brut}} Kg
                                 </div>
                                 <div class="">
-                                    Date : {{currentDep.date.toLocaleDateString()}}
+                                    Poid Net : {{currentChgt.poid_net}} Kg
                                 </div>
-                                <div class="" v-if="currentDep.magasin">
-                                    Magasin : {{currentDep.magasin.nom}}
+                                <div class="">
+                                    Nombre de Sacs: {{currentChgt.nb_sac}} 
                                 </div>
-                                <div class="" v-if="!currentDep.magasin">
-                                    Pisteur: {{currentDep.pisteur}}
+                                <div class="" v-if="currentChgt.magasin">
+                                    Magasin : {{currentChgt.magasin.nom}}
+                                </div>
+                                <div class="" v-if="!currentChgt.magasin">
+                                    Pisteur: {{currentChgt.pisteur}}
+                                </div>
+                                <div class="">
+                                    Prix Total : {{currentChgt.prix_total}} FCFA
+                                </div>
+                                <div class="">
+                                    benefice : {{currentChgt.benefice || 0}} FCFA
                                 </div>
 
                             </div>
@@ -75,7 +93,7 @@
 
                 <div class="modal-footer" v-if="modalAction=='delete'">
                     <button type="button" class="btn btn-secondary px-2" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" @click="deleteDepense(currentDep)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
+                    <button type="button" @click="deleteChgt(currentChgt)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
                 </div>
             </div>
         </div>
@@ -92,7 +110,7 @@
         <div class="d-flex justify-content-end my-1">
             <div class="btn-group text-center  shadow-sm rounded">
                 <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
-                <button @click="printDocument('list', 'exportateurs')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                <button @click="printDocument('list', 'chargements')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
                 <button class="btn btn-warning" @click="refresh()">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
@@ -106,10 +124,9 @@
                 <div class="col-md-8  pe-0">
                     <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
                         <div v-if="searchBool">
-                            <input @keyup.enter="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
+                            <input @keyup.enter="getChargementList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
                         </div>
                     </transition>
-
                 </div>
             </div>
             <div id="list">
@@ -117,34 +134,39 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Motif</th>
-                            <th>Montant</th>
-                            <th>Receveur</th>
+                            <th>N° Fiche</th>
                             <th>Date</th>
+                            <th>Produit</th>
+                            <th>Poid Net</th>
+                            <th>Magasin/Pisteur</th>
+                            <th>Prix Total</th>
+                            <th>Bénéfice</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <transition-group tag="tbody" mode="out-in" name="slide">
-                        <tr class="" v-for="(dep, index) in depenses" :key="dep.id" @dblclick="infoDepense(dep)">
+                        <tr class="" v-for="(chgt, index) in chargements" :key="chgt.id" @dblclick="infoChgt(chgt)">
                             <th> {{index+1}}</th>
-                            <td class="col-md-4 px-2 ">{{dep.motif}} </td>
-
-                            <td class="col-md-3 px-2 ">{{dep.montant}}</td>
-                            <td class="col-md-3 px-2 " v-if="dep.magasin != undefined">{{dep.magasin.nom}}</td>
-                            <td class="col-md-3 px-2 " v-if="dep.pisteur != undefined">{{dep.pisteur.nom}} {{dep.pisteur.prenom}}</td>
-                            <td class="col-md-3 px-2 ">{{dep.date.toLocaleDateString()}}</td>
-
+                            <td class="px-2">{{chgt.nb_fiche}} </td>
+                            <td class="px-2">{{chgt.date.toLocaleDateString()}}</td>
+                            <td class="px-2">{{chgt.produit}} </td>
+                            <td class="px-2">{{chgt.poid_net}}</td>
+                            <td class="px-2">{{chgt.magasin.nom}}</td>
+                            <td class="px-2">{{chgt.prix_total}}</td>
+                            <td class="px-2">{{chgt.benefice || 0}} FCFA</td>
+                            <td class="px-2">{{chgt.status}}</td>
                             <td>
                                 <div class="btn-group">
-                                    <button @click="infoDepense(dep)" class="btn text-info">
+                                    <button @click="infoChgt(chgt)" class="btn text-info">
                                         <i class="bi bi-info-circle"></i>
                                     </button>
 
-                                    <button @click="launchModal(dep, 'update')" class="btn text-primary">
+                                    <button @click="launchModal(chgt, 'update')" class="btn text-primary">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
 
-                                    <button @click="deleteDepense(dep, 'warnDeletion')" class="btn text-danger">
+                                    <button @click="deleteChgt(chgt, 'warnDeletion')" class="btn text-danger">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -172,10 +194,10 @@ export default {
     data() {
         return {
             searchBool: false,
-            currentDep: {
+            currentChgt: {
                 date: new Date()
             },
-            depenses: [],
+            chargements: [],
             modalAction: 'detail',
             modalText: '',
             alertMessage: null,
@@ -187,70 +209,42 @@ export default {
     },
     created() {
         this.getMagasinList()
-        this.getDepenseList()
+        this.getChargementList()
     },
     computed: {
         depenseCounter() {
-            return this.depenses.length
+            return this.chargements
+                .length
         }
     },
     methods: {
-
-        getDepenseList() {
-
-            window.models.Depense.find({})
-                .populate({
-                    path: 'magasin',
-                    model: window.models.Magasin,
-
-                })
-                .populate({
-                    path: 'pisteur',
-                    model: window.models.Pisteur,
-                })
-                .then((res) => {
-
-                    this.depenses = res
-                    console.log('liste de depenses recuperé avec succès', res)
-
-                })
-                .catch((err) => {
-                    console.log(err)
-
-                })
-        },
-        launchModal(dep, name) {
+        
+        launchModal(chgt, name) {
             if (!name) {
-                var myModal = document.getElementById('depenseModal')
+                let myModal = document.getElementById('chargementModal')
 
-            const depenseModal = new bootstrap.Modal(myModal, {
-                keyboard: false
-            })
-            depenseModal.show()
+                const produitModal = new bootstrap.Modal(myModal, {
+                    keyboard: false
+                })
+                produitModal.show()
 
             } else {
-                this.currentDep = dep
                 let myModal = document.getElementById('updateModal')
                 const updateModal = new bootstrap.Modal(myModal, {
                     keyboard: false
                 })
-                
+                this.currentChgt = chgt
                 updateModal.show()
 
             }
 
         },
-
-        infoDepense(dep) {
+        
+        infoChgt(chgt) {
             this.modalAction = 'detail'
-            this.currentDep = dep
-            if (this.currentDep.magasin) {
-                // window.models.Magasin.findone({_id: this.currentDep.magasin})
-                // .then(doc => {
-                //     doc.populate()
-                // })
-
-                this.currentDep.populate('magasin')
+            this.currentChgt = chgt
+            if (this.currentChgt.magasin) {
+                this.currentChgt.populate('magasin')
                     .then((res) => {
                         console.log(res)
                     })
@@ -258,31 +252,28 @@ export default {
             }
             this.launchModal()
         },
-        deleteDepense(dep, msg) {
+        deleteChgt(chgt, msg) {
             this.modalAction = 'delete'
-            console.log(dep)
-            if (msg == 'warnDeletion') {
-                this.modalText = 'Vous êtes sur le point de supprimer une depense. êtes vous sur de vouloir le faire? cette action est irreversible'
-                this.currentDep = dep
 
+            if (msg == 'warnDeletion') {
+                this.modalText = 'Vous êtes sur le point de supprimer un chargement. êtes vous sur de vouloir le faire? cette action est irreversible'
+                this.currentChgt = chgt
                 this.launchModal()
-            } 
-            else if (!msg) {
-                console.log(dep, this.currentDep)
-                if (dep) {
+            } else if (!msg) {
+                if (chgt) {
                     this.operation.nom = 'delete'
-                    window.models.Depense.deleteOne({
-                            _id: dep._id
+                    window.models.Chargement.deleteOne({
+                            _id: chgt._id
                         })
                         .then((res) => {
-                            this.hideModal()
+                            
                             console.log(res)
-                            this.alertMessage = 'Depense supprimé avec succès.'
+                            this.alertMessage = 'Chargement supprimé avec succès.'
                             this.operation.status = true
-                            this.getDepenseList()
+                            this.getChargementList()
                         })
                         .catch((err) => {
-                            this.alertMessage = "Impossible de supprimer le depasin une erreur s'est produite."
+                            this.alertMessage = "Impossible de supprimer le chargement une erreur s'est produite."
                             console.log(err)
                             this.operation.status = true
 

@@ -12,7 +12,7 @@
 
     </div>
 
-    <transition mode="out-in" enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__fadeOutDown ">
+    <transition mode="out-in" enter-active-class="animate__animated animate__slideInLeft animate__fast" leave-active-class="animate__animated animate__slideOutRight animate__faster" >
         <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-if="action == 'ajouter'">
             <CreatePisteur />
         </div>
@@ -28,11 +28,13 @@
 const bootstrap = require('bootstrap')
 import CreatePisteur from '@/components/CreatePisteur.vue'
 import ListPisteur from '@/components/ListPisteur.vue'
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin
+ = require('../mixins/lists').default
 export default {
     /* eslint-env mongoose */
     name: 'Pisteur',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin
+],
     components: {
         CreatePisteur,
         ListPisteur

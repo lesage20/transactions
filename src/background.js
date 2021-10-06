@@ -6,17 +6,17 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path')
 const ipcMain = require("electron").ipcMain;
-let workerWindow = undefined;
+var prinWin = undefined;
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
     { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
-const fs = require('fs')
+
 async function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
-        width: 900,
-        height: 650,
+        width: 1024,
+        height: 720,
         webPreferences: {
 
             // Use pluginOptions.nodeIntegration, leave this alone
@@ -40,38 +40,46 @@ async function createWindow() {
         // Load the index.html when not in development
         win.loadURL('app://./index.html')
     }
-    // win.webContents.on('did-finish-load', () => {
-    //     win.webContents.printToPDF({ marginsType:2, pageSize:"A4", landscape:false }, (error, data) => {
-    //         if (error) throw error
-    //         fs.writeFile('output.pdf', data, (error) => {
-    
-    //         //getTitle of Window
-    //         console.log(win.webContents.getTitle())
-    
-    //         //Silent Print 
-    
-    //         if (error) throw error
-    //         console.log('Write PDF successfully.')
-    //         })
-    //     })
-    // })
-    // win.webContents.print({silent:false, printBackground:false})
-    ipcMain.on("getPrinterList", (event)=>{
-        console.log("I need to send you printers list")
+
+    ipcMain.on("getPrinterList", (event) => {
         const list = win.webContents.getPrinters()
-        // win.webContents.print({silent:false, printBackground:false})
-
-        win.webContents.send('getPrinterList',win.webContents.getPrinters())
-        console.log(list)
+        win.webContents.send('getPrinterList', win.webContents.getPrinters())
+       
     })
-    ipcMain.on("print", (event, content)=>{
-        console.log("I need to print some content")
-        const list = win.webContents.print()
-        // win.webContents.print({silent:false, printBackground:false})
+    ipcMain.on("print", (event, content, title) => {
+        printWindow()
+        prinWin.webContents.send('print', content, title)
 
-        // win.webContents.send('getPrinterList',win.webContents.getPrinters())
+    })
+    ipcMain.on("readyToPrint", (event, content, title) => {
+        
+        prinWin.webContents.print()
+
+    })
+}
+async function printWindow() {
+    prinWin = new BrowserWindow({
+        width: 1200,
+        height: 700,
+        center: true,
+        webPreferences: {
+
+            // Use pluginOptions.nodeIntegration, leave this alone
+            // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+            nodeIntegration: true || process.env.ELECTRON_NODE_INTEGRATION,
+            contextIsolation: false, // !process.env.ELECTRON_NODE_INTEGRATION,
+            enableRemoteModule: true,
+            preload: path.join(__dirname, 'preload.js'),
+        }
         
     })
+    await prinWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL + "printer.html")
+    prinWin.on("closed", () => {
+        prinWin = undefined;
+    });
+    
+
+
 }
 
 // Quit when all windows are closed.
@@ -98,7 +106,7 @@ app.on('ready', async () => {
         try {
             await installExtension(VUEJS3_DEVTOOLS)
         } catch (e) {
-            console.error('Vue Devtools failed to install:', e.toString())
+            console.error('Vue Devtools failed to install: ', e.toString())
         }
     }
 

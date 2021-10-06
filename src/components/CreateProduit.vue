@@ -1,10 +1,10 @@
 <template>
 <div >
-    <div class="modal" tabindex="-1" id="gerantModal">
+    <div class="modal" tabindex="-1" id="produitModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Ajouter un gerant</h5>
+                    <h5 class="modal-title">Ajouter un produit</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -19,20 +19,21 @@
         </div>
     </div>
    
-    <form @submit.prevent="createGerant">
+    <form @submit.prevent="createProduit">
         <div class="form-group p-2">
             <label for="nom">Nom </label>
-            <input v-model="nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du partenaire">
+            <input v-model="nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du produit">
         </div>
         <div class="form-group p-2">
-            <label for="prenom">Prenoms</label>
-            <input v-model="prenom" type="text" class="form-control" id="prenom" placeholder="Entrez le/les prenom(s) du gerant">
+            <label for="prixAchat">Prix d'achat pour 1 Kg</label>
+            <input v-model="prixAchat" type="number" class="form-control" id="prixAchat" placeholder="Entrez le prix d'achat(s) pour 1 Kg">
         </div>
        
         <div class="form-group p-2">
-            <label for="telephone">Numero de telephone du gerant</label>
-            <input v-model="telephone" type="text" class="form-control" id="telephone" placeholder="Entrez le numero de telephone du gerant">
+            <label for="benefice">Benefice </label>
+            <input v-model="benefice" type="text" class="form-control" id="benefice" placeholder="Entrez le benefice que vous voulez gagner sur ce produit">
         </div>
+
         <div class="form-group p-2">
 
             <label for="magasin">Magasin</label>
@@ -41,8 +42,6 @@
             </select>
         </div>
  
-
-
         <div class="form-group p-2 d-flex justify-content-end">
             <div>
                 <button type="submit" class="btn btn-success">Enregistrer</button>
@@ -58,51 +57,48 @@ const ListsMixin
  = require('../mixins/lists').default
 export default {
     /* eslint-env mongoose */
-    name: 'gerant',
+    name: 'produit',
     mixins: [ListsMixin
 ],
     data() {
         return {
             nom: null,
-            prenom: null,
+            prixAchat: null,
             magasin: null,
-            telephone: null,
-            statut: "independant",
+            benefice: null,
             magasins: [],
             modalText: null,
 
         }
     },
-    mounted() {
+    created() {
         this.getMagasinList()
-        // console.log(this.magasins)
     },
     methods: {
-
-        createGerant() {
+        createProduit() {
                 window.models.Magasin.findOne({
                         nom: this.magasin
                     })
                     .then((doc) => {
-                        doc.gerants.push({
+                        doc.produits.push({
                                 nom: this.nom,
-                                prenom: this.prenom,
-                                telephone: this.telephone
+                                prixAchat: this.prixAchat,
+                                benefice: this.benefice
                             })
                             doc.save()
                             .then((res) => {
                                 console.log(res)
-                                this.modalText = 'Gerant ajouté avec succès'
+                                // fire user
+                                this.modalText = 'Produit ajouté avec succès'
                                 this.launchModal('succes')
+                                // clear all input field
                                 this.nom = ''
-                                this.prenom = ''
-                                this.statut = ''
-                                this.nb_cni = ''
-                                this.telephone = ''
+                                this.prixAchat = ''
+                                this.benefice = ''
 
                             }).catch((err) => {
                                 console.log(err)
-                                this.modalText = "Le gerant n'a pas pu être ajoutée . veuillez vérifier les informations renseignées et reessayez"
+                                this.modalText = "Le produit n'a pas pu être ajoutée . veuillez vérifier les informations renseignées et reessayez"
                                 this.launchModal('echec')
                             })
                     })
@@ -113,7 +109,7 @@ export default {
             
         },
         launchModal(status) {
-            var myModal = document.getElementById('gerantModal')
+            var myModal = document.getElementById('produitModal')
             if (status == 'echec') {
                 myModal.classList.add('text-danger')
                 myModal.classList.remove('text-success')
@@ -121,10 +117,10 @@ export default {
                 myModal.classList.add('text-success')
                 myModal.classList.remove('text-danger')
             }
-            const gerantModal = new bootstrap.Modal(myModal, {
+            const produitModal = new bootstrap.Modal(myModal, {
                 keyboard: false
             })
-            gerantModal.show()
+            produitModal.show()
 
         }
     }

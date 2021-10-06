@@ -2,7 +2,7 @@
 <div>
    
     <div class="modal fade" tabindex="-1" id="pisteurModal">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-dialog-centered ">
 
             <div class="modal-content">
                 <div class="modal-header ">
@@ -70,41 +70,70 @@
                 {{alertMessage}}
             </p>
         </div>
+        <div class="d-flex justify-content-end my-1">
+            <div class="btn-group text-center  shadow-sm rounded">
+                <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
+                <button @click="printDocument('list', 'pisteurs')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                <button class="btn btn-warning" @click="refresh()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+                <button class="btn btn-light ">
+                    Total: {{pisteurCounter}}
+                </button>
+            </div>
+        </div>
         <div>
-            <div class="d-flex justify-content-end m-0 px-5 py-0">
-                <div>
-                    <p>
-                        Total: {{pisteurCounter}}
-                    </p>
+            <div class="d-flex justify-content-center m-0 p pb-2">
+                <div class="col-md-8  pe-0">
+                    <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
+                        <div v-if="searchBool">
+                            <input @keyup.enter="getPisteurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
+                        </div>
+                    </transition>
+
                 </div>
             </div>
-            <ol class="list-group list-group-flush mt-2 ">
+           
+            <div id="list">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nom et Prenom</th>
+                            <th>Telephone</th>
+                            <th>Statut</th>
+                            <th>Solde</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <transition-group tag="tbody" mode="out-in" name="slide">
+                        <tr class="" v-for="(pist, index ) in pisteurs" @dblclick="infoPisteur(pist)" :key="pist.nom">
+                            <th> {{index+1}}</th>
+                            <td class="col-md-4 px-2 ">{{pist.nom}} {{pist.prenom}}</td>
+                            <td class="col-md-3 px-2 ">{{pist.telephone}}</td>
+                            <td class="col-md-3 px-2 ">{{pist.statut}}</td>
+                            <td class="col-md-3 px-2 ">{{pist.solde || 0 }}</td>
 
-                <li class="list-group-item d-flex justify-content-between align-items-start bg-light" v-for="pist in pisteurs" :key="pist.nom">
-                    <div class="p-3 me-auto">
-                        {{pist.nom}} {{pist.prenom}}
+                            <td>
+                                <div class="btn-group">
+                                    <button @click="infoPisteur(pist)" class="btn text-info">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
 
-                    </div>
-                    <div class="d-flex p-2">
-                        <div class="mx-1">
-                            <button @click="infoPisteur(pist)" class="btn text-info">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </div>
-                        <div class="mx-1">
-                            <button class="btn text-primary">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-                        </div>
-                        <div class="mx-1">
-                            <button @click="deletePisteur(pist, 'warnDeletion')" class="btn text-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </li>
+                                    <button @click="launchModal(pist, 'update')" class="btn text-primary">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
 
-            </ol>
+                                    <button @click="deletePisteur(pist, 'warnDeletion')" class="btn text-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </transition-group>
+
+                </table>
+            </div>
         </div>
 
     </div>
@@ -114,13 +143,17 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin
+ = require('../mixins/lists').default
+const printMixin = require('../mixins/printDocument').default
 
 export default {
     name: 'ListMagasin',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin
+, printMixin],
     data() {
         return {
+            searchBool: false,
             currentPist: {},
             modalAction: 'detail',
             modalText: '',
@@ -143,31 +176,12 @@ export default {
         }
     },
     methods: {
-        getPisteurList() {
-            window.models.Pisteur.find({})
-                .then((docs) => {
-                    this.pisteurs = docs
-
-                    for (var i in this.magasins) {
-
-                        this.magasins[i].pisteurs.forEach(pist => {
-                            pist.magasin = this.magasins[i].nom
-                            this.pisteurs.push(pist)
-                        })
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-        },
         launchModal() {
             var myModal = document.getElementById('pisteurModal')
-
             const pisteurModal = new bootstrap.Modal(myModal, {
                 keyboard: false
             })
             pisteurModal.show()
-
         },
         hideModal() {
             var myModal = document.getElementById('pisteurModal')
@@ -176,7 +190,6 @@ export default {
                 keyboard: false
             })
             pisteurModal.hide()
-
         },
         infoPisteur(pist) {
             this.modalAction = 'detail'

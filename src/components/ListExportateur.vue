@@ -1,6 +1,5 @@
 <template>
 <div>
-
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -38,7 +37,6 @@
     </div>
     <div class="modal fade" tabindex="-1" id="exportateurModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
-
             <div class="modal-content">
                 <div class="modal-header ">
                     <h4 class="modal-title ps-5 text-center text-primary" v-if="modalAction=='detail'"> <i class="bi bi-info-circle-fill text-info"></i> Détails Exportateur: {{currentExp.nom}} {{currentExp.prenom}} </h4>
@@ -62,23 +60,18 @@
                                 Telephone : {{currentExp.telephone}}
                             </div>
                             <div>
-
                                 Solde : {{currentExp.solde}} FCFA
                             </div>
                             <div>
-
-                                Modifier : {{currentExp.updatedAt}} 
+                                Modifier : {{currentExp.updatedAt}}
                             </div>
-
                         </div>
-
                     </div>
                     <div class="row p-2" v-if="modalAction=='delete'">
                         <p class="">
                             {{ modalText }}
                         </p>
                     </div>
-
                 </div>
 
                 <div class="modal-footer" v-if="modalAction=='delete'">
@@ -97,82 +90,77 @@
                 </div>
                 <div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-
                 </div>
-
             </div>
             <p class="alert alert-danger" v-if="!operation.status">
                 <i class="bi bi-exclamation-triangle-fill text-danger"></i> {{alertMessage}}
             </p>
         </div>
+        <div class="d-flex justify-content-end my-1">
+            <div class="btn-group text-center  shadow-sm rounded">
+                <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
+                <button @click="printDocument('list', 'exportateurs')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                <button class="btn btn-warning" @click="refresh()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+                <button class="btn btn-light ">
+                    Total: {{exportateurCounter}}
+                </button>
+            </div>
+        </div>
         <div>
-            <div class="d-flex justify-content-between m-0 pe-5 py-0">
-                <div class="col-md-3">
-                    <div>
-                    <small >Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone</small>
-                        <input @keyup="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechercher un exportateur ...">
+            <div class="d-flex justify-content-center m-0 p pb-2">
+                <div class="col-md-8  pe-0">
+                    <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
+                        <div v-if="searchBool">
+                            <input @keyup.enter="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
+                        </div>
+                    </transition>
 
-                    </div>
-
-                </div>
-                <div class="col-md-3">
-                    <small >Rechechez un exportateur selon la date a laquelle vous l'avez ajouter</small>
-                    <input @change="getExportateurList(searchDate)" v-model="searchDate" type="date" name="search-by-date" id="search-by-date" class="form-control " placeholder="Rechercher un exportateur ..">
-
-                </div>
-                <div>
-                    <p>
-                        Total: {{exportateurCounter}}
-                    </p>
                 </div>
             </div>
-            <ol class="list-group list-group-flush mt-2 border rounded">
-                <li class="list-group-item d-flex justify-content-between align-items-start ">
-                    <div class="p-3 me-auto d-flex col-md-10 justify-content-start text-start">
-                        <div class="col-md-4 border-end px-2 fs-5 border-end">Nom et Prenom</div>
+            <div id="list">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nom et Prenom</th>
+                            <th>Addresse</th>
+                            <th>Telephone</th>
+                            <th>Solde</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <transition-group tag="tbody" mode="out-in" name="slide" appear>
+                        <tr class="" v-for="(exp, index ) in exportateurs" @dblclick="infoExportateur(exp)" :key="exp.nom">
+                            <th> {{index+1}}</th>
+                            <td class="col-md-4 px-2 ">{{exp.nom}} {{exp.prenom}}</td>
 
-                        <div class="col-md-3 px-2 fs-5 border-end">Addresse</div>
-                        <div class="col-md-3 px-2 fs-5 border-end">Telephone</div>
-                        <div class="col-md-3 px-2 fs-5 border-end">Solde</div>
+                            <td class="col-md-3 px-2 ">{{exp.addresse}}</td>
+                            <td class="col-md-3 px-2 ">{{exp.telephone}}</td>
+                            <td class="col-md-3 px-2 ">{{exp.solde}}</td>
 
-                    </div>
-                    <div class="p-3 col-md-2 ">
-                        <div class="text-center px-2 fs-5">
-                            Actions
-                        </div>
+                            <td>
+                                <div class="btn-group">
+                                    <button @click="infoExportateur(exp)" class="btn text-info">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
 
-                    </div>
-                </li>
+                                    <button @click="launchModal(exp, 'update')" class="btn text-primary">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
 
-                <li class="list-group-item d-flex justify-content-between align-items-start " v-for="exp in exportateurs" @dblclick="infoExportateur(exp)" :key="exp.nom">
-                    <div class="p-3 me-auto d-flex col-md-10 justify-content-start text-start">
-                        <div class="col-md-4 px-2 ">{{exp.nom}} {{exp.prenom}}</div>
+                                    <button @click="deleteExportateur(exp, 'warnDeletion')" class="btn text-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </transition-group>
 
-                        <div class="col-md-3 px-2 ">{{exp.addresse}}</div>
-                        <div class="col-md-3 px-2 ">{{exp.telephone}}</div>
-                        <div class="col-md-3 px-2 ">{{exp.solde}}</div>
+                </table>
+            </div>
 
-                    </div>
-                    <div class="d-flex p-2">
-                        <div class="mx-1">
-                            <button @click="infoExportateur(exp)" class="btn text-info">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-                        </div>
-                        <div class="mx-1">
-                            <button @click="launchModal(exp, 'update')" class="btn text-primary">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-                        </div>
-                        <div class="mx-1">
-                            <button @click="deleteExportateur(exp, 'warnDeletion')" class="btn text-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </li>
-
-            </ol>
         </div>
 
     </div>
@@ -182,14 +170,18 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin
+ = require('../mixins/lists').default
+const printMixin = require('../mixins/printDocument').default
 
 export default {
     name: 'ListMagasin',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin
+, printMixin],
     data() {
         return {
             search: '',
+            searchBool: false,
             searchDate: new Date(),
             currentExp: {},
             modalAction: 'detail',
@@ -202,10 +194,10 @@ export default {
             Exportateurs: [],
         }
     },
-    watch : {
-        currentExp () {
+    watch: {
+        currentExp() {
             if (this.currentExp) {
-                this.currentExp.createdAt =  this.currentExp.createdAt.toLocaleDateString()
+                this.currentExp.createdAt = this.currentExp.createdAt.toLocaleDateString()
             }
         }
     },
@@ -219,13 +211,20 @@ export default {
         }
     },
     methods: {
+        refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getExportateurList()
 
+        },
         editExp(exp) {
             console.log(exp)
-            window.models.Exportateur.findOne({_id: exp._id}, (err, doc)=>{
+            window.models.Exportateur.findOne({
+                _id: exp._id
+            }, (err, doc) => {
                 if (err) {
-                    console.log(err) 
-                    return 
+                    console.log(err)
+                    return
                 }
                 doc.nom = this.currentExp.nom
                 doc.prenom = this.currentExp.prenom
@@ -274,7 +273,7 @@ export default {
                         _id: exp._id
                     })
                     .then((res) => {
-                        
+
                         console.log(res)
                         this.alertMessage = 'Exportateur supprimé avec succès.'
                         this.operation.status = true

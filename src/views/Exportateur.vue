@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <transition mode="out-in" enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__fadeOutDown" appear>
+    <transition mode="out-in" enter-active-class="animate__animated animate__slideInLeft animate__fast" leave-active-class="animate__animated animate__slideOutRight animate__faster">
         <div id="Lister" class=" row bg-white shadow-sm rounded-bottom p-2" v-if="action == 'lister'">
             <ListExportateur />
         </div>
@@ -29,12 +29,14 @@ const bootstrap = require('bootstrap')
 // const $ = require('jquery')
 import CreateExportateur from '@/components/CreateExportateur.vue'
 import ListExportateur from '@/components/ListExportateur.vue'
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin
+ = require('../mixins/lists').default
 
 export default {
     /* eslint-env jQuery */
     name: 'Exportateur',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin
+],
     components: {
         CreateExportateur,
         ListExportateur,

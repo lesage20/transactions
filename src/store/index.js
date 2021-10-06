@@ -17,7 +17,7 @@ var store = new Vuex.Store({
           state.montant_total_depense += somme
         } else if (etat == "recu") {
           state.montant_total_recu += somme
-        } else if (etat == "recu") {
+        } else if (etat == "benefice") {
           state.benefice_total += somme
         }
     },
@@ -28,7 +28,7 @@ var store = new Vuex.Store({
         state.montant_total_depense -= somme
       } else if (etat == "recu") {
         state.montant_total_recu -= somme
-      } else if (etat == "recu") {
+      } else if (etat == "benefice") {
         state.benefice_total -= somme
       }
     },
@@ -39,7 +39,7 @@ var store = new Vuex.Store({
         state.montant_total_depense = 0
       } else if (etat == "recu") {
         state.montant_total_recu = 0
-      } else if (etat == "recu") {
+      } else if (etat == "benefice") {
         state.benefice_total = 0
       }
     }

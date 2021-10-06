@@ -18,6 +18,14 @@
                             <label for="code">code du magasin</label>
                             <input v-model="currentMag.code" type="text" class="form-control" id="code" placeholder="Entrez  le code du magasin">
                         </div>
+                        <div class="form-group p-2">
+                            <label for="ville">Ville du Magasin</label>
+                            <input v-model="currentMag.ville" type="text" class="form-control" id="ville" placeholder="Entrez la ville ou le magasin se situe">
+                        </div>
+                        <div class="form-group p-2">
+                            <label for="addresse">Addresse du Magasin</label>
+                            <input v-model="currentMag.addresse" type="text" class="form-control" id="addresse" placeholder="Entrez l'addresse du magasin">
+                        </div>
 
                     </form>
                 </div>
@@ -52,7 +60,6 @@
                                 Nombre de pisteurs : {{currentMag.pisteurs.length}} <br>
                                 Nombre de gerant : {{currentMag.gerants.length}}<br>
                                 Solde: {{currentMag.solde}} FCFA <br>
-                                
                             </p>
                         </div>
 
@@ -107,84 +114,69 @@
                 {{alertMessage}}
             </p>
         </div>
+        <div class="d-flex justify-content-end my-1">
+            <div class="btn-group text-center  shadow-sm rounded">
+                <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
+                <button @click="printDocument('list', 'magasins')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                <button class="btn btn-warning" @click="refresh()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+                <button class="btn btn-light ">
+                    Total: {{MagasinCounter}}
+                </button>
+            </div>
+        </div>
         <div>
             <div>
-                <div class="d-flex justify-content-between m-0 pe-5 py-0">
-                    <div class="col-md-4">
-                        <div>
-                            <small>Rechechez un magasin par son nom, code, gerant (nom, prenom, numero) ou pisteur (nom, prenom, numero)</small>
-                            <input @keyup.enter="getMagasinList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechercher un exportateur ...">
-
-                        </div>
-
-                    </div>
-                    <div class="col-md-4">
-                        <small>Rechechez un magasin selon la date a laquelle vous l'avez ajouter ou modifier</small>
-                        <input @change="getMagasinList(searchDate)" v-model="searchDate" type="date" name="search-by-date" id="search-by-date" class="form-control " placeholder="Rechercher un exportateur ..">
-
-                    </div>
-                    <div class="col-md-2">
-
-                        <button class="btn btn-outline-secondary mt-5" @click="getMagasinList()">
-                            annuler
-                        </button>
-                    </div>
-                    <div class="mt-5">
-                        <p class="mt-3">
-                            Total: {{MagasinCounter}}
-                        </p>
+                <div class="d-flex justify-content-center m-0 p pb-2">
+                    <div class="col-md-8  pe-0">
+                        <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
+                            <div v-if="searchBool">
+                                <!-- <small>Rechechez un magasin par son nom, code, gerant (nom, prenom, numero) ou pisteur (nom, prenom, numero)</small> -->
+                                <input @keyup.enter="getMagasinList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un magasin par son nom, code, gerant (nom, prenom, numero) ou pisteur (nom, prenom, numero)">
+                            </div>
+                        </transition>
                     </div>
                 </div>
             </div>
+
             <div id="list">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Code</th>
+                            <th scope="col">Ville</th>
+                            <th scope="col">Solde</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <transition-group tag="tbody" mode="out-in" name="slide">
+                        <tr v-for="(mag, index) in magasins" :key="mag.nom" @dblclick="infoMag(mag)">
+                            <th scope="row">{{index+1}}</th>
+                            <td class="col-md-3">{{mag.nom}}</td>
+                            <td class="col-md-2">{{mag.code}}</td>
+                            <td class="col-md-2">{{mag.ville}}</td>
+                            <td class="col-md-2">{{mag.solde}}</td>
+                            <td class="col-md-2">
+                                <div class="btn-group">
+                                    <button @click="infoMag(mag)" class="btn text-primary">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
+                                    <button @click="launchModal(mag, 'update')" class="btn text-success ">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button @click="deleteMagasin(mag, 'warnDeletion')" class="btn text-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </transition-group>
 
-                <li class="list-group-item d-flex justify-content-between align-items-start bg-light">
-                    <div class="p-3 me-auto d-flex col-md-10 justify-content-start text-start">
-                        <div class="col-md-4 border-end px-2 fs-5 border-end">Nom</div>
-
-                        <div class="col-md-3 px-2 fs-5 border-end">Code</div>
-
-                        <div class="col-md-3 px-2 fs-5 border-end">Solde</div>
-
-                    </div>
-                    <div class="p-3 col-md-2 ">
-                        <div class="text-center px-2 fs-5">
-                            Actions
-                        </div>
-
-                    </div>
-                </li>
-                <transition-group tag="ul" mode="out-in" name="slide" class="list-group list-group-flush mt-2 border rounded">
-
-                    <li class="list-group-item d-flex justify-content-between align-items-start " v-for="mag in magasins" :key="mag.nom" @dblclick="infoMag(mag)">
-                        <div class="p-3 me-auto d-flex col-md-10 justify-content-start text-start">
-                            <div class="col-md-4  px-2 fs-5 ">{{mag.nom}}</div>
-
-                            <div class="col-md-3 px-2 fs-5 ">{{mag.code}}</div>
-
-                            <div class="col-md-3 px-2 fs-5 ">{{mag.solde}}</div>
-                        </div>
-                        <div class="d-flex p-2">
-                            <div class="mx-1">
-                                <button @click="infoMag(mag)" class="btn text-info">
-                                    <i class="bi bi-info-circle"></i>
-                                </button>
-                            </div>
-                            <div class="mx-1">
-                                <button @click="launchModal(mag, 'update')" class="btn text-primary">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                            </div>
-                            <div class="mx-1">
-                                <button @click="deleteMagasin(mag, 'warnDeletion')" class="btn text-danger">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </li>
-                </transition-group>
+                </table>
             </div>
-
         </div>
     </div>
 
@@ -193,17 +185,21 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin
+ = require('../mixins/lists').default
+const printMixin = require('../mixins/printDocument').default
 
 export default {
     name: 'ListMagasin',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin
+, printMixin],
     data() {
         return {
             currentMag: {
                 pisteurs: [],
                 gerants: []
             },
+            searchBool: false,
             modalAction: 'detail',
             modalText: '',
             operationSucceded: false,
@@ -230,8 +226,10 @@ export default {
         }
     },
     methods: {
-        cancelSearch() {
-
+        refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getMagasinList()
         },
         editMag(mag) {
             window.models.Magasin.findOne({
@@ -293,7 +291,7 @@ export default {
                             nom: mag.nom
                         })
                         .then(() => {
-                            
+
                             this.alertMessage = 'Magasin supprimé avec succès.'
                             this.operation.status = true
                             this.getMagasinList()
@@ -316,7 +314,7 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css" >
 /* #list ul {
         position: relative;
 } */
@@ -347,16 +345,16 @@ export default {
 .slide-enter-active {
     transition: all 0.8s ease;
     transform-origin: center;
-   
+
 }
+
 .slide-leave-active {
     transform-origin: right;
     transition: all 0.8s ease;
     position: absolute;
 }
+
 .slide-move {
     transition: all 0.5s ease;
-    
-
 }
 </style>

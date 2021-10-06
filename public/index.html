@@ -1,25 +1,56 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="description" content="Application de gestion de transaction">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-    <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css" type="style/css">
+    <title>
+        <%= htmlWebpackPlugin.options.title %>
+    </title>
     <style>
-      .bg-gray {
-        background-color: rgb(238, 236, 236) !important;
-      }
-      
-    </style>
-  </head>
+        .bg-gray {
+            background-color: rgb(238, 236, 236) !important;
 
-  <body class="bg-gray">
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background-color: rgba(128, 128, 128, 0.452);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: blue;
+        }
+
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 5px grey;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-track-piece {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray" style="overflow: auto;">
     <noscript>
-      <strong>Nous sommes désolé mais <%= htmlWebpackPlugin.options.title %> ne fonctionne pas sans javascript activé. Svp activez le pour continuer.</strong>
+        <strong>
+            Nous sommes désolé mais <%= htmlWebpackPlugin.options.title %> ne fonctionne pas sans javascript activé.
+            Svp activez le pour continuer.
+        </strong>
     </noscript>
     <div class="container-fluid" id="app"></div>
     <!-- built files will be auto injected -->
-  </body>
+</body>
+
 </html>

@@ -2,11 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Pisteur from '@/views/Pisteur.vue'
 import Depense from '@/views/Depense.vue'
-import Chargement from '@/components/Chargement.vue'
+import Chargement from '@/views/Chargement.vue'
 import Magasin from '@/views/Magasin.vue'
 import Gerant from '@/views/Gerant.vue'
+import Produit from '@/views/Produit.vue'
 import Exportateur from '@/views/Exportateur.vue'
 import Recevoir from '@/views/Recevoir.vue'
+import Livraison from '@/views/Livraison.vue'
 
 
 
@@ -48,6 +50,11 @@ const routes = [
     component: Gerant
   },
   {
+    path: '/produit',
+    name: 'Produit',
+    component: Produit
+  },
+  {
     path: '/exportateur',
     name: 'Exportateur',
     component: Exportateur
@@ -57,7 +64,13 @@ const routes = [
     name: 'Recevoir',
     component: Recevoir
   },
+  {
+    path: '/livraison',
+    name: 'Livraison',
+    component: Livraison
+  },
 ]
+
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),

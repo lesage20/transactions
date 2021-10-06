@@ -49,11 +49,13 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin
+ = require('../mixins/lists').default
 export default {
     /* eslint-env mongoose */
     name: 'Exportateur',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin
+],
     data() {
         return {
             nom: null,

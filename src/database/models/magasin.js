@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema 
 const gerantSchema = require('./gerant')
+const produitSchema = require('./produit')
 
 const pisteurSchema = new Schema({
     nom: {
@@ -47,16 +48,17 @@ const magasinSchema = new Schema({
     },
     gerants: [ gerantSchema ],
     pisteurs: [ pisteurSchema ],
+    produits: [produitSchema],
     solde: {
         type: Number,
         required: true
     }
 
 
-}, {timestamps: true})
+}, {timestamps: true, collection: 'magasin'})
 // magasinSchema.index({"nom": 'text', "code":"text", "createdAt": "text"})
 magasinSchema.index({"$**":"text"})
-var Magasin = mongoose.model('magasins', magasinSchema)
+var Magasin = mongoose.model('magasin', magasinSchema)
 module.exports = Magasin
 Magasin.createIndexes()
 

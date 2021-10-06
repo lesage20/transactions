@@ -64,11 +64,13 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin
+ = require('../mixins/lists').default
 export default {
     /* eslint-env mongoose */
     name: 'Pisteur',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin
+],
     data() {
         return {
             nom: null,
@@ -89,6 +91,23 @@ export default {
     methods: {
 
         createPisteur() {
+            if (isNaN(this.telephone)) {
+                this.modalText = "Le numero de telephone saisie est incorrect"
+                this.launchModal('echec')
+                return
+            } else if ((this.telephone.length != 10)) {
+                this.modalText = "Le numero de telephone en Côte d'ivoire compte 10 chiffre"
+                this.launchModal('echec')
+                return
+            } else if (this.telephone.length == 10) {
+                if (this.telephone.startsWith('01') || this.telephone.startsWith('05') || this.telephone.startsWith('07')) {
+                    console.log('good number')
+                } else {
+                    this.modalText = "Le numero de telephone en Côte d'ivoire doivent commencer par 01,05 ou 07"
+                    this.launchModal('echec')
+                    return
+                }
+            }
             if (this.statut == 'dependant') {
                 if (this.magasin != null) {
                     window.models.Magasin.findOne({
@@ -100,6 +119,7 @@ export default {
                                 prenom: this.prenom,
                                 statut: this.statut,
                                 nb_cni: this.nb_cni,
+                                solde: 0,
                                 telephone: this.telephone
                             })
                             doc.save()
@@ -133,7 +153,8 @@ export default {
                     prenom: this.prenom,
                     statut: this.statut,
                     nb_cni: this.nb_cni,
-                    telephone: this.telephone
+                    telephone: this.telephone,
+                    solde: 0,
                 }).then((res) => {
                     console.log(res)
 

@@ -54,8 +54,8 @@
             <label for="magasin">Le magasin concerné</label>
             <!-- <input v-model="magasin" type="phone" class="form-control" id="magasin" placeholder="Entrez le nom du magasin concerné"> -->
             <select name="magasin" id="magasin" v-model="magasin" class="form-select text-muted">
-                <option :value="magasin._id" v-for="magasin in magasins" :key="magasin._id">
-                    {{ magasin.nom }}
+                <option :value="mag._id" v-for="mag in magasins" :key="mag._id">
+                    {{ mag.nom }}
                 </option>
             </select>
         </div>
@@ -80,12 +80,14 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const MagasinMixin = require('../mixins/magasin').default
+const ListsMixin
+ = require('../mixins/lists').default
 
 export default {
     /* eslint-env mongoose */
     name: 'Depense',
-    mixins: [MagasinMixin],
+    mixins: [ListsMixin
+],
     data() {
         return {
             motif: null,
@@ -110,6 +112,7 @@ export default {
                 this.launchModal('echec')
                 return
             }
+
             if (this.depenseur == 'magasin') {
 
                 window.models.Depense.create({
@@ -120,7 +123,7 @@ export default {
                     })
 
                     .then((res) => {
-                        console.log(res)
+
                         this.$store.commit('deduire', {
                             somme: this.montant,
                             etat: 'principal'
@@ -131,6 +134,23 @@ export default {
                         })
                         this.modalText = 'Depense crée avec succès'
                         this.launchModal('succes')
+
+                        window.models.Magasin.findOne({
+                                _id: res.magasin
+                            })
+                            .then((doc) => {
+
+                                doc.solde += res.montant
+
+                                doc.save((err, dc) => {
+                                    if (err) console.log("magasin concerné: ", err)
+                                    else console.log('magasin concerné: success: ', dc)
+                                })
+                            })
+                            .catch((err) => {
+                                console.log(err)
+                            })
+
                         this.motif = ''
                         this.montant = ''
                         this.magasin = ''
@@ -152,7 +172,29 @@ export default {
                     })
 
                     .then((res) => {
-                        console.log(res)
+                        this.$store.commit('deduire', {
+                            somme: this.montant,
+                            etat: 'principal'
+                        })
+                        this.$store.commit('ajouter', {
+                            somme: this.montant,
+                            etat: 'depense'
+                        })
+                        window.models.Pisteur.findOne({
+                                _id: res.pisteur
+                            })
+                            .then((doc) => {
+                                console.log(doc)
+
+                                doc.solde = res.montant
+                                doc.save((err) => {
+                                    if (err) console.log("pisteur concerné: ", err)
+
+                                })
+                            })
+                            .catch((err) => {
+                                console.log(err)
+                            })
 
                         this.modalText = 'Depense crée avec succès'
                         this.launchModal('succes')

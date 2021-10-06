@@ -10,11 +10,11 @@
             </div>
         </div>
     </div>
-    <transition enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__fadeOutDown" mode="out-in">
+    <transition mode="out-in" enter-active-class="animate__animated animate__fadeIn animate__faster" leave-active-class="animate__animated animate__fadeOut animate__faster" >
         <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-if="action == 'ajouter'">
             <CreateRecevoir />
         </div>
-
+    
         <div id="Lister" class=" row bg-white shadow-sm rounded-bottom " v-else>
             <ListRecevoir />
         </div>

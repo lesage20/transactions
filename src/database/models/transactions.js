@@ -1,8 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema 
-const Pisteur = require('./pisteur')
-const Magasin = require('./magasin')
-const Exportateur = require('./exportateur')
+
 const transactionSchema = new Schema({
     type: {
         type: String,
@@ -30,7 +28,9 @@ const transactionSchema = new Schema({
     }
     
 
-}, {timestamps: true})
+}, {timestamps: true, collection: 'transaction'})
+
 transactionSchema.index({"$**": 'text'})
-module.exports = mongoose.model('transactions', transactionSchema)
-mongoose.model('transactions', transactionSchema).createIndexes()
+var Transaction = mongoose.model('transaction', transactionSchema)
+module.exports = Transaction
+Transaction.createIndexes()

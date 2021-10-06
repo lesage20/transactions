@@ -1,38 +1,6 @@
 <template>
 <div>
-    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"> <i class="bi bi-pencil-square"></i> Modification</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form @submit.prevent="createExportateur">
-                        <div class="form-group p-2">
-                            <label for="motif">Motif </label>
-                            <input v-model="currentDep.motif" type="text" class="form-control" id="motif" aria-describedby="nameHelp" placeholder="Entrez le motif de la depense">
-                        </div>
-                        <div class="form-group p-2">
-                            <label for="montant">Montant</label>
-                            <input v-model="currentDep.montant" type="text" class="form-control" id="montant" placeholder="Entrez le/les montant de la depense">
-                        </div>
-                        <div class="form-group p-2">
-                            <label for="date">Date de depense</label>
-                            <input v-model="currentDep.date" type="date" class="form-control" id="date" placeholder="Entrez  la date a laquelle vouuuuuuuus avez depensé l'argent">
-                        </div>
-                        
-
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">j'ai fini</button>
-                    <button type="submit" @click.prevent="editDep(currentDep)" class="btn btn-primary">Modifier <i class="bi bi-pencil-square"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" tabindex="-1" id="depenseModal">
+    <div class="modal fade" tabindex="-1" id="livraisonModal">
         <div class="modal-dialog modal-dialog-centered ">
             <div class="modal-content">
                 <div class="modal-header ">
@@ -75,7 +43,7 @@
 
                 <div class="modal-footer" v-if="modalAction=='delete'">
                     <button type="button" class="btn btn-secondary px-2" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" @click="deleteDepense(currentDep)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
+                    <button type="button" @click="deleteLivraison(currentDep)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
                 </div>
             </div>
         </div>
@@ -89,7 +57,7 @@
                 {{alertMessage}}
             </p>
         </div>
-        <div class="d-flex justify-content-end my-1">
+         <div class="d-flex justify-content-end my-1">
             <div class="btn-group text-center  shadow-sm rounded">
                 <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
                 <button @click="printDocument('list', 'exportateurs')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
@@ -97,7 +65,7 @@
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
                 <button class="btn btn-light ">
-                    Total: {{depenseCounter}}
+                    Total: {{livraisonCounter}}
                 </button>
             </div>
         </div>
@@ -117,34 +85,31 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Motif</th>
-                            <th>Montant</th>
-                            <th>Receveur</th>
+                            <th>Exportateur</th>
+                            <th>Chargement</th>
                             <th>Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <transition-group tag="tbody" mode="out-in" name="slide">
-                        <tr class="" v-for="(dep, index) in depenses" :key="dep.id" @dblclick="infoDepense(dep)">
+                        <tr class="" v-for="(dep, index) in livraisons" :key="dep.id" @dblclick="infoLivraison(dep)">
                             <th> {{index+1}}</th>
-                            <td class="col-md-4 px-2 ">{{dep.motif}} </td>
+                            <td class="col-md-4 px-2 ">{{dep.exportateur.nom}} {{dep.exportateur.prenom}} </td>
 
-                            <td class="col-md-3 px-2 ">{{dep.montant}}</td>
-                            <td class="col-md-3 px-2 " v-if="dep.magasin != undefined">{{dep.magasin.nom}}</td>
-                            <td class="col-md-3 px-2 " v-if="dep.pisteur != undefined">{{dep.pisteur.nom}} {{dep.pisteur.prenom}}</td>
+                            <td class="col-md-3 px-2 ">{{dep.chargement.nb_fiche}}</td>
                             <td class="col-md-3 px-2 ">{{dep.date.toLocaleDateString()}}</td>
 
                             <td>
                                 <div class="btn-group">
-                                    <button @click="infoDepense(dep)" class="btn text-info">
+                                    <button @click="infoLivraison(dep)" class="btn text-info">
                                         <i class="bi bi-info-circle"></i>
                                     </button>
 
-                                    <button @click="launchModal(dep, 'update')" class="btn text-primary">
+                                    <button @click="launchModal(exp, 'update')" class="btn text-primary">
                                         <i class="bi bi-pencil-square"></i>
                                     </button>
 
-                                    <button @click="deleteDepense(dep, 'warnDeletion')" class="btn text-danger">
+                                    <button @click="deleteExportateur(exp, 'warnDeletion')" class="btn text-danger">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -154,7 +119,7 @@
 
                 </table>
             </div>
-
+            
         </div>
     </div>
 
@@ -163,7 +128,8 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const ListsMixin = require('../mixins/lists').default
+const ListsMixin
+ = require('../mixins/lists').default
 const printMixin = require('../mixins/printDocument').default
 
 export default {
@@ -175,7 +141,7 @@ export default {
             currentDep: {
                 date: new Date()
             },
-            depenses: [],
+            livraisons: [],
             modalAction: 'detail',
             modalText: '',
             alertMessage: null,
@@ -187,61 +153,57 @@ export default {
     },
     created() {
         this.getMagasinList()
-        this.getDepenseList()
+        this.getLivraisonList()
     },
     computed: {
-        depenseCounter() {
-            return this.depenses.length
+        livraisonCounter() {
+            return this.livraisons.length
         }
     },
     methods: {
+        
+        // getLivraisonList() {
 
-        getDepenseList() {
+        //     window.models.Livraison.find({})
+        //     .populate({
+        //         path: 'magasin',
+        //         model: window.models.Magasin,
+                
+        //     })
+        //     .populate({
+        //         path: 'pisteur',
+        //         model: window.models.Pisteur,
+        //     })
+        //         .then((res) => {
+                   
+        //             this.livraisons = res
+        //             console.log('liste de livraisons recuperé avec succès', res)
 
-            window.models.Depense.find({})
-                .populate({
-                    path: 'magasin',
-                    model: window.models.Magasin,
+        //         })
+        //         .catch((err) => {
+        //             console.log(err)
 
-                })
-                .populate({
-                    path: 'pisteur',
-                    model: window.models.Pisteur,
-                })
-                .then((res) => {
+        //         })
+        // },
+        launchModal() {
+            var myModal = document.getElementById('livraisonModal')
 
-                    this.depenses = res
-                    console.log('liste de depenses recuperé avec succès', res)
-
-                })
-                .catch((err) => {
-                    console.log(err)
-
-                })
-        },
-        launchModal(dep, name) {
-            if (!name) {
-                var myModal = document.getElementById('depenseModal')
-
-            const depenseModal = new bootstrap.Modal(myModal, {
+            const livraisonModal = new bootstrap.Modal(myModal, {
                 keyboard: false
             })
-            depenseModal.show()
-
-            } else {
-                this.currentDep = dep
-                let myModal = document.getElementById('updateModal')
-                const updateModal = new bootstrap.Modal(myModal, {
-                    keyboard: false
-                })
-                
-                updateModal.show()
-
-            }
+            livraisonModal.show()
 
         },
+        hideModal() {
+            var myModal = document.getElementById('livraisonModal')
 
-        infoDepense(dep) {
+            const livraisonModal = new bootstrap.Modal(myModal, {
+                keyboard: false
+            })
+            livraisonModal.hide()
+
+        },
+        infoLivraison(dep) {
             this.modalAction = 'detail'
             this.currentDep = dep
             if (this.currentDep.magasin) {
@@ -258,28 +220,28 @@ export default {
             }
             this.launchModal()
         },
-        deleteDepense(dep, msg) {
+        deleteLivraison(dep, msg) {
             this.modalAction = 'delete'
-            console.log(dep)
+
             if (msg == 'warnDeletion') {
-                this.modalText = 'Vous êtes sur le point de supprimer une depense. êtes vous sur de vouloir le faire? cette action est irreversible'
+                this.modalText = 'Vous êtes sur le point de supprimer un depasin. êtes vous sur de vouloir le faire? cette action est irreversible'
+                var date = dep.date.toLocaleDateString()
+                dep.date = date
                 this.currentDep = dep
 
                 this.launchModal()
-            } 
-            else if (!msg) {
-                console.log(dep, this.currentDep)
-                if (dep) {
+            } else if (!msg) {
+                if (dep.motif) {
                     this.operation.nom = 'delete'
-                    window.models.Depense.deleteOne({
+                    window.models.Livraison.deleteOne({
                             _id: dep._id
                         })
                         .then((res) => {
                             this.hideModal()
                             console.log(res)
-                            this.alertMessage = 'Depense supprimé avec succès.'
+                            this.alertMessage = 'Livraison supprimé avec succès.'
                             this.operation.status = true
-                            this.getDepenseList()
+                            this.getLivraisonList()
                         })
                         .catch((err) => {
                             this.alertMessage = "Impossible de supprimer le depasin une erreur s'est produite."
@@ -299,7 +261,7 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css" >
 .list-group-item {
     text-align: center !important;
 }

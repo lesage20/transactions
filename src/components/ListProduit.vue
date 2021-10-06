@@ -11,31 +11,31 @@
                     <form @submit.prevent>
                         <div class="form-group p-2">
                             <label for="nom">Nom </label>
-                            <input v-model="currentGer.nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du gerant">
+                            <input v-model="currentProd.nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du produit">
                         </div>
                         <div class="form-group p-2">
-                            <label for="prenom">Prenoms</label>
-                            <input v-model="currentGer.prenom" type="text" class="form-control" id="prenom" placeholder="Entrez le/les prenom(s) du gerant">
+                            <label for="prixAchat">Prix d'achat pour 1 Kg</label>
+                            <input v-model="currentProd.prixAchat" type="number" class="form-control" id="prixAchat" placeholder="Entrez le prix d'achat du produit">
                         </div>
                         <div class="form-group p-2">
-                            <label for="telephone">Numero de telephone du gerant</label>
-                            <input v-model="currentGer.telephone" type="text" class="form-control" id="telephone" placeholder="Entrez le numero de telephone du gerant">
+                            <label for="benefice">Benefice sur vente d'un produit</label>
+                            <input v-model="currentProd.benefice" type="text" class="form-control" id="benefice" placeholder="Entrez  le benefice sur vente d'un produit">
                         </div>
 
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">J'ai Fini</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Modifier <i class="bi bi-pencil-square"></i></button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="modal fade" tabindex="-1" id="gerantModal">
+    <div class="modal fade" tabindex="-1" id="produitModal">
         <div class="modal-dialog modal-dialog-centered ">
             <div class="modal-content">
                 <div class="modal-header ">
-                    <h4 class="modal-title  text-center text-primary" v-if="modalAction=='detail'"> <i class="bi bi-info-circle-fill text-info"></i> Détails Gerant </h4>
+                    <h4 class="modal-title  text-center text-primary" v-if="modalAction=='detail'"> <i class="bi bi-info-circle-fill text-info"></i> Détails produit </h4>
                     <h4 class="modal-title  text-center text-warning" v-if="modalAction=='delete'"> <i class="bi bi-exclamation-octagon-fill text-warning"></i> Supprimer un Pisteur </h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -44,16 +44,16 @@
                         <div class="p-2  fs-3   rounded col-md-10">
 
                             <div>
-                                Nom : {{currentGer.nom}}
+                                Nom : {{currentProd.nom}}
                             </div>
                             <div>
-                                Prenom : {{currentGer.prenom}}
+                                Prix Achat : {{currentProd.prixAchat}} FCFA
                             </div>
                             <div>
-                                Telephone : {{currentGer.telephone}}
+                                Benefice : {{currentProd.benefice}} FCFA
                             </div>
                             <div>
-                                Magasin : {{currentGer.magasin}}
+                                Magasin : {{currentProd.magasin}}
                             </div>
 
                         </div>
@@ -69,7 +69,7 @@
 
                 <div class="modal-footer" v-if="modalAction=='delete'">
                     <button type="button" class="btn btn-secondary px-2" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" @click="deleteGerant(currentGer)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
+                    <button type="button" @click="deleteProduit(currentProd)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
                 </div>
             </div>
         </div>
@@ -98,7 +98,7 @@
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
                 <button class="btn btn-light ">
-                    Total: {{gerantCounter}}
+                    Total: {{produitCounter}}
                 </button>
             </div>
         </div>
@@ -106,7 +106,7 @@
             <div class="col-md-8  pe-0">
                 <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
                     <div v-if="searchBool">
-                        <input @keyup.enter="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un gerant par son nom, prenom, addresse ou numero de telephone">
+                        <input @keyup.enter="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un produit par son nom, prixAchat, benefice ou numero de telephone">
                     </div>
                 </transition>
 
@@ -117,29 +117,31 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Nom et Prenom</th>
-                    <th>Telephone</th>
+                    <th>Nom </th>
+                    <th>Prix Achat</th>
+                    <th>Prix Vente</th>
                     <th>Magasin</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <transition-group tag="tbody" mode="out-in" name="slide">
-                <tr class="" v-for="(ger, index ) in gerants" @dblclick="infoGerant(ger)" :key="ger.nom">
+                <tr class="" v-for="(prod, index ) in produits" @dblclick="infoProduit(prod)" :key="prod.nom">
                     <th class="col-md-2"> {{index+1}}</th>
-                    <td class="col-md-4 px-2 ">{{ger.nom}} {{ger.prenom}}</td>
-                    <td class="col-md-3 px-2 ">{{ger.telephone}}</td>
-                    <td class="col-md-3 px-2 ">{{ger.magasin}}</td>
+                    <td class="col-md-3 px-2 ">{{prod.nom}} </td>
+                    <td class="col-md-2 px-2 ">{{prod.prixAchat}}</td>
+                    <td class="col-md-2 px-2 ">{{prod.benefice}}</td>
+                    <td class="col-md-3 px-2 ">{{prod.magasin}}</td>
                     <td>
                         <div class="btn-group">
-                            <button @click="infoGerant(ger)" class="btn text-info">
+                            <button @click="infoProduit(prod)" class="btn text-info">
                                 <i class="bi bi-info-circle"></i>
                             </button>
 
-                            <button @click="launchModal(ger, 'update')" class="btn text-primary">
+                            <button @click="launchModal(prod, 'update')" class="btn text-primary">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
 
-                            <button @click="deleteGerant(ger, 'warnDeletion')" class="btn text-danger">
+                            <button @click="deleteProduit(prod, 'warnDeletion')" class="btn text-danger">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -162,8 +164,9 @@ export default {
     mixins: [ListsMixin, printMixin],
     data() {
         return {
-            currentGer: {},
-            gerants: [],
+            isBool: false,
+            currentProd: {},
+            produits: [],
             modalAction: 'detail',
             modalText: '',
             alertMessage: null,
@@ -171,71 +174,70 @@ export default {
                 name: '',
                 status: false
             },
-            gereurs: [],
+
         }
     },
     created() {
         this.getMagasinList()
         setTimeout(() => {
-            this.getGerantList()
-        }, 150)
+            this.getProduitList()
+        }, 80)
     },
     computed: {
-        gerantCounter() {
-            return this.gerants.length
+        produitCounter() {
+            return this.produits.length
         }
     },
     methods: {
 
-        launchModal(ger, name) {
+        launchModal(prod, name) {
             if (!name) {
-                let myModal = document.getElementById('gerantModal')
+                let myModal = document.getElementById('produitModal')
 
-                const gerantModal = new bootstrap.Modal(myModal, {
+                const produitModal = new bootstrap.Modal(myModal, {
                     keyboard: false
                 })
-                gerantModal.show()
+                produitModal.show()
 
             } else {
-                this.currentGer = ger
-                // console.log(this.currentGer)
                 let myModal = document.getElementById('updateModal')
                 const updateModal = new bootstrap.Modal(myModal, {
                     keyboard: false
                 })
-                
+                this.currentProd = prod
                 updateModal.show()
 
             }
 
         },
-        infoGerant(ger) {
+      
+        infoProduit(pist) {
             this.modalAction = 'detail'
 
-            this.currentGer = ger
+            this.currentProd = pist
             this.launchModal()
         },
-        deleteGerant(ger, msg) {
+        deleteProduit(prod, msg) {
             this.modalAction = 'delete'
 
             if (msg == 'warnDeletion') {
-                this.modalText = 'Vous êtes sur le point de supprimer un gerant. êtes vous sur de vouloir le faire? cette action est irreversible'
-                this.currentGer = ger
+                this.modalText = 'Vous êtes sur le point de supprimer un Produit. êtes vous sur de vouloir le faire? cette action est irreversible'
+                this.currentProd = prod
                 this.launchModal()
             } else if (!msg) {
                 this.operation.nom = 'delete'
                 window.models.Magasin.findOne({
-                        nom: ger.magasin
+                        nom: prod.magasin
                     })
                     .then((mag) => {
-        
-                        mag.gerants.splice(ger.__index)
+
+                        mag.produits.splice(prod.__index)
                         mag.save((err, doc) => {
                             if (err) {
                                 console.log(err)
                             } else {
                                 console.log(doc)
-                                this.alertMessage = 'Pisteur supprimé avec succès.'
+                                this.alertMessage = 'Produit supprimé avec succès.'
                                 this.operation.status = true
                                 this.getMagasinList()
                                 this.getGerantList()
@@ -244,7 +246,7 @@ export default {
 
                     })
                     .catch((err) => {
-                        this.alertMessage = "Impossible de supprimer le gerant une erreur s'est produite."
+                        this.alertMessage = "Impossible de supprimer le produit une erreur s'est produite."
                         console.log(err)
                         this.operation.status = false
                     })

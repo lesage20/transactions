@@ -1,16 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Impression de document</title>
 </head>
+
 <body>
-    <h1>Bonjour tout le monde</h1>
-    <h1>Bonjour tout le monde</h1>
-    <h1>Bonjour tout le monde</h1>
-    <h1>Bonjour tout le monde</h1>
-    <h1>Bonjour tout le monde</h1>
+    <div class="container p-3" id="container" id="app">
+        <h5 id="title" class="text-center">Liste des </h5>
+        <div class="" id="content">
+
+        </div>
+    </div>
+    <script>
+
+        const ipcRenderer = require("electron").ipcRenderer;
+
+        ipcRenderer.on("print", (event, content, title) => {
+            document.getElementById("content").innerHTML = content;
+            document.getElementById("title").textContent += title;
+            ipcRenderer.send("readyToPrint");
+        });
+    </script>
 </body>
+
 </html>

@@ -4,11 +4,13 @@
         <router-link to="/" id='home' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100"> Accueil</router-link>
         <router-link to="/magasin" id='magasin' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100">Magasin</router-link>
         <router-link to="/gerant" id='gerant' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100"> Gerant</router-link>
-        <router-link to="/exportateur" id='exportateur' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100"> Exportateur</router-link>
         <router-link to="/pisteur" id='pisteur' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100"> Pisteur</router-link>
+        <router-link to="/exportateur" id='exportateur' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100"> Exportateur</router-link>
         <router-link to="/recevoir" id='recevoir' class="btn btn-dark text-gray fs-6 rounded-0 " style="font-weight: 100">Recevoir</router-link>
         <router-link to="/depense" id='depense' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100"> Depense</router-link>
+        <router-link to="/produit" id='produit' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100"> Produit</router-link>
         <router-link to="/chargement" id='chargement' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100">Chargement</router-link>
+        <router-link to="/livraison" id='livraison' class="btn btn-dark text-gray fs-6 rounded-0" style="font-weight: 100"> Livraison</router-link>
     </div>
 
 </div>
@@ -23,7 +25,6 @@
 <script>
 const $ = require('jquery')
 const dburl = process.env.VUE_APP_DBURL || "mongodb://localhost:27017/Transactions"
-const ipcRenderer = require("electron").ipcRenderer;
 export default {
     /* eslint-env jQuery */
     name: "Main",
@@ -33,13 +34,13 @@ export default {
         }
     },
     created() {
-        this.getPrinterList()
+        console.log(window.models)
         window.mongoose.connect(dburl, {
                 useNewUrlParser: true
             })
             .then(() => {
                 console.log('db connected successfully')
-                this.getPrinterList()
+        
             })
             .catch((err) => {
                 console.log(err)
@@ -56,15 +57,7 @@ export default {
 
     },
     methods: {
-        getPrinterList() {
-            ipcRenderer.send("getPrinterList")
-            ipcRenderer.send("print")
-            ipcRenderer.once("getPrinterList", (event, data) => {
-                //data is the printer list
-                console.log("printers: ",data);
-                this.printers = data
-            });
-        },
+        
         activeRightButton() {
             $('#nav .btn').on('click', () => {
                 $('#nav .btn').removeClass('active').removeClass('text-white')

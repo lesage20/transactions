@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema 
-const Pisteur = require('./pisteur')
-const Magasin = require('./magasin')
+
 const depenseSchema = new Schema({
     motif: {
         type: String,
@@ -25,6 +24,7 @@ const depenseSchema = new Schema({
     }
     
 
-}, {timestamps: true})
+}, {timestamps: true, collection: 'depense'})
 depenseSchema.index({"$**": 'text'})
 module.exports = mongoose.model('depense', depenseSchema)
+mongoose.model('depense', depenseSchema).createIndexes()

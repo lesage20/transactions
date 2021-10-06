@@ -1,7 +1,7 @@
 <template>
 <div class="row bg-white p-4   shadow-sm">
-    <h5 class="text-center" v-if="action == 'ajouter'">Ajouter un Gerant</h5>
-    <h5 class="text-center" v-else>Liste des Gerants</h5>
+    <h5 class="text-center" v-if="action == 'ajouter'">Ajouter un produit</h5>
+    <h5 class="text-center" v-else>Liste des produits</h5>
     <div class="d-flex justify-content-center">
         <div class="btn-group text-center  ">
             <button @click="editAction('lister')" class="btn btn-primary">Lister</button><button @click="editAction('ajouter')" class="btn btn-success">Ajouter</button>
@@ -10,10 +10,10 @@
     <transition mode="out-in" enter-active-class="animate__animated animate__slideInLeft animate__fast" leave-active-class="animate__animated animate__slideOutRight animate__faster" >
 
         <div v-if="action == 'ajouter'">
-            <CreateGerant />
+            <CreateProduit />
         </div>
         <div v-else>
-            <ListGerant />
+            <ListProduit />
         </div>
     </transition>
 </div>
@@ -21,18 +21,18 @@
 
 <script>
 // const bootstrap = require('bootstrap')
-import CreateGerant from '@/components/CreateGerant.vue'
-import ListGerant from '@/components/ListGerant.vue'
+import CreateProduit from '@/components/CreateProduit.vue'
+import ListProduit from '@/components/ListProduit.vue'
 export default {
-    name: "Gerant",
+    name: "Produit",
     data() {
         return {
             action: 'lister'
         }
     },
     components: {
-        CreateGerant,
-        ListGerant
+        CreateProduit,
+        ListProduit
     },
     methods: {
         editAction(action) {

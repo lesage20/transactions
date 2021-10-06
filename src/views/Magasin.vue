@@ -1,8 +1,8 @@
 <template>
 <div>
     <div class="row bg-white p-4  shadow-sm">
-        <h5 class="text-center" v-if="action == 'ajouter'">Ajouter un Magasin</h5>
-        <h5 class="text-center" v-else>Liste des magasin</h5>
+        <h5 class="text-center" v-if="action == 'ajouter'" id="titlle">Ajouter un Magasin</h5>
+        <h5 class="text-center" v-else id="titlle">Liste des magasin</h5>
         <div class="d-flex justify-content-center">
             <div class="btn-group text-center  ">
                  <button @click="editAction('lister')" class="btn btn-primary"> <i class="bi bi-list"></i> Lister </button>
@@ -10,7 +10,7 @@
             </div>
         </div>
     </div>
-    <transition enter-active-class="animate__animated animate__zoomIn" leave-active-class="animate__animated animate__fadeOutDown" mode="out-in">
+    <transition mode="out-in" enter-active-class="animate__animated animate__slideInLeft animate__fast" leave-active-class="animate__animated animate__slideOutRight animate__faster" >
         <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-if="action == 'ajouter'">
             <CreateMagasin />
         </div>
