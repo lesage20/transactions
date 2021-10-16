@@ -75,7 +75,7 @@
             <label for="poid_net">Poids net du chargement (Kg)</label>
             <input v-model="poid_net" type="number" class="form-control" id="poid_net" placeholder="Entrez le poids net du chargement en Kg">
         </div>
-        <div class="form-group p-2" v-if="chargeur=='magasin'">
+        <div class="form-group p-2">
             <label for="produit">Produit contenu dans le chargement </label>
             <select name="produit" id="produit" v-model="produit" class="form-select text-muted">
                 <option :value="prod.nom" v-for="prod in produitsChargeur" :key="prod.nom">
@@ -196,7 +196,10 @@ export default {
                 this.launchModal('echec')
                 return
             }
+            
             if (this.chargeur == 'magasin') {
+                
+                let vm = this
                 window.models.Chargement.create({
                     nb_fiche: this.nb_fiche,
                     date: this.date,
@@ -208,15 +211,18 @@ export default {
                     magasin: this.magasin._id,
                     produit: this.produit,
                     benefice: this.benefice,
-                    status: "attente"
+                    status: "attente",
+                    util: false
                 }).then((res) => {
                     console.log(res)
+                    
                     window.models.Magasin.findOne({
                             _id: res.magasin
                         })
                         .then((doc) => {
 
                             doc.solde -= res.prix_total
+                            doc.produits[vm.$data.produit.__index].util = true
 
                             doc.save((err, dc) => {
                                 if (err) console.log("magasin concerné: ", err)
@@ -250,7 +256,11 @@ export default {
                     poid_net: this.poid_net,
                     prix_kg: this.prix_kg,
                     prix_total: this.total,
-                    pisteur: this.pisteur._id
+                    pisteur: this.pisteur._id,
+                    produit: this.produit,
+                    benefice: this.benefice,
+                    status: "attente",
+                    util: false
                 }).then((res) => {
                     console.log(res)
                     window.models.Pisteur.findOne({

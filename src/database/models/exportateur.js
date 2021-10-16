@@ -21,6 +21,10 @@ const exportateurSchema = new Schema({
     solde: {
         type: Number,
         required: true
+    },
+    util: {
+        type: Boolean,
+        required: true
     }
 
 }, {timestamps: true, collection: 'exportateur'})

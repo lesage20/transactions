@@ -10,7 +10,7 @@
             </div>
         </div>
     </div>
-    <transition mode="out-in" enter-active-class="animate__animated animate__slideInLeft animate__fast" leave-active-class="animate__animated animate__slideOutRight animate__faster" >
+    <transition mode="out-in" enter-active-class="animate__animated animate__fadeIn animate__fast" leave-active-class="animate__animated animate__fadeOut animate__faster" >
         <div id="Ajout" class=" row bg-white shadow-sm rounded-bottom" v-if="action == 'ajouter'">
             <CreateMagasin />
         </div>

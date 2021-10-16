@@ -1,5 +1,20 @@
 <template>
 <div>
+     <div id="context-menu" >
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoRecep(currentRecep)">
+            <i class="bi bi-info-circle-fill"></i>  Info
+        </div>
+        <div class="item" @click="launchModal(currentRecep, 'update')">
+            <i class="bi bi-pencil-fill"></i>  Modifier
+        </div>
+        <div class="item" @click="deleteRecep(currentRecep, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i>  Supprimer
+        </div>
+    </div>
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -78,7 +93,7 @@
                 <div class="d-flex justify-content-end my-1">
                     <div class="btn-group text-center  shadow-sm rounded">
                         <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
-                        <button @click="printDocument('list', 'magasins')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                        <button @click="printDocument('list', 'receptions')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
                         <button class="btn btn-warning" @click="refresh()">
                             <i class="bi bi-arrow-clockwise"></i>
                         </button>
@@ -92,7 +107,7 @@
                         <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster">
                             <div v-if="searchBool">
                                 <div class="input-group my-1" v-if="searchBoolStr">
-                                    <input @keyup.enter="getReceptionList(search)" v-model="search" type="text" name="search" id="search" class=" form-control " placeholder="Rechechez un recu selon l'exportateur">
+                                    <input @keyup.enter="searchRecevoir(search)" v-model="search" type="text" name="search" id="search" class=" form-control " placeholder="Rechechez un recu selon l'exportateur ou le montant">
                                     <div class="input-group-append">
                                         <input type="submit" class="btn btn-secondary rounded-0 rounded-end" value="Rechercher par date" @click.prevent="searchByDate">
                                     </div>
@@ -118,29 +133,19 @@
                             <th>Nom et Prenom exp</th>
                             <th>Montant</th>
                             <th>Date</th>
-                            <th>Actions</th>
+                           
 
                         </tr>
                     </thead>
 
                     <transition-group tag="tbody" mode="out-in" name="slide" >
-                        <tr class="" v-for="(recep, index) in receptions" :key="recep._id" @dblclick="infoRecep(recep)">
+                        <tr class="" v-for="(recep, index) in receptions" :key="recep._id" @dblclick="infoRecep(recep)" @contextmenu="contextMenu($event, recep)">
                             <td class="col-md-1  px-2 fs-5 ">{{ index + 1 }} </td>
                             <td class="col-md-4  px-2 fs-5 ">{{ recep.exportateur.nom }} {{ recep.exportateur.prenom }} </td>
                             <td class="col-md-3 px-2 fs-5 ">{{recep.montant}}</td>
                             <td class="col-md-2 px-2 fs-5 ">{{recep.date.toLocaleDateString()}}</td>
 
-                            <td class="col-md-2">
-                                <button @click="infoRecep(recep)" class="btn text-info">
-                                    <i class="bi bi-info-circle"></i>
-                                </button>
-                                <button @click="launchModal(recep, 'update')" class="btn text-primary">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <button @click="deleteReception(recep, 'warnDeletion')" class="btn text-danger">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
+                            
                         </tr>
                     </transition-group>
                 </table>
@@ -158,7 +163,7 @@ const ListsMixin = require('../mixins/lists').default
 const printMixin = require('../mixins/printDocument').default
 
 export default {
-    name: 'ListMagasin',
+    name: 'ListRecevoir',
     mixins: [ListsMixin, printMixin],
     data() {
         return {
@@ -179,6 +184,9 @@ export default {
     },
     created() {
         this.getReceptionList()
+        window.addEventListener('click', ()=>{
+            document.getElementById("context-menu").classList.remove('active')
+        })
     },
     computed: {
         date() {
@@ -190,10 +198,51 @@ export default {
         },
         ReceptionCounter() {
             return this.receptions.length
+        },
+        allRecevoir(){
+            return this.receptionsForSearch
         }
     },
     methods: {
-       
+        contextMenu(event, recep) {
+
+            this.currentRecep = recep
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+            context_menu.classList.remove('active')
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
+
+        },
+        searchRecevoir(searchString){
+            console.log(searchString)
+            let receptions = this.allRecevoir
+            this.receptions = []
+            receptions.forEach((el)=>{
+                console.log(el)
+                if (el.exportateur.nom.toLowerCase().includes(searchString.toLowerCase())){
+                    this.receptions.push(el)
+                } 
+                else if (el.montant.toString() == searchString) {
+                     this.receptions.push(el)
+                }
+                else if (el.exportateur.prenom.toLowerCase().includes(searchString.toLowerCase())){
+                    this.receptions.push(el)
+                } 
+                else if (el.exportateur.telephone.toLowerCase().includes(searchString.toLowerCase())){
+                    this.receptions.push(el)
+                } 
+                else if (el.exportateur.addresse.toLowerCase().includes(searchString.toLowerCase())){
+                    this.receptions.push(el)
+                } 
+            })
+        },
+       refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getReceptionList()
+        },
         searchByDate() {
             this.searchBoolStr = !this.searchBoolStr
             this.searchBoolDate = !this.searchBoolDate
@@ -260,6 +309,7 @@ export default {
                 this.launchModal()
             } else if (!msg) {
                 if (recep.exportateur) {
+                    
                     this.operation.nom = 'delete'
                     window.models.Transaction.deleteOne({
                             _id: recep._id

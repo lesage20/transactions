@@ -25,6 +25,10 @@ const transactionSchema = new Schema({
     exportateur: {
         type: Schema.Types.ObjectId, ref: 'exportateur',
         required: false
+    },
+    util: {
+        type: Boolean,
+        required: true
     }
     
 

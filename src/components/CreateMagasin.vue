@@ -22,6 +22,7 @@
         <div class="form-group p-2">
             <label for="name">Nom </label>
             <input v-model="nom" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="Entrez le nom du magazin">
+            
         </div>
         <div class="form-group p-2">
             <label for="code">Code du Magasin</label>
@@ -73,7 +74,8 @@ export default {
                 ville: this.ville,
                 code: this.code,
                 addresse: this.addresse,
-                solde: 0
+                solde: 0,
+                util: false
             }).then((res) => {
                 console.log(res)
 

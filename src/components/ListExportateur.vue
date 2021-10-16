@@ -1,5 +1,20 @@
 <template>
 <div>
+     <div id="context-menu" >
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoExportateur(currentExp)">
+            <i class="bi bi-info-circle-fill"></i>  Info
+        </div>
+        <div class="item" @click="launchModal(currentExp, 'update')">
+            <i class="bi bi-pencil-fill"></i>  Modifier
+        </div>
+        <div class="item" @click="deleteExportateur(currentExp, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i>  Supprimer
+        </div>
+    </div>
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -128,11 +143,11 @@
                             <th>Addresse</th>
                             <th>Telephone</th>
                             <th>Solde</th>
-                            <th>Actions</th>
+                            
                         </tr>
                     </thead>
                     <transition-group tag="tbody" mode="out-in" name="slide" appear>
-                        <tr class="" v-for="(exp, index ) in exportateurs" @dblclick="infoExportateur(exp)" :key="exp.nom">
+                        <tr class="" v-for="(exp, index ) in exportateurs" @dblclick="infoExportateur(exp)" :key="exp.nom" @contextmenu="contextMenu($event, exp)">
                             <th> {{index+1}}</th>
                             <td class="col-md-4 px-2 ">{{exp.nom}} {{exp.prenom}}</td>
 
@@ -140,21 +155,7 @@
                             <td class="col-md-3 px-2 ">{{exp.telephone}}</td>
                             <td class="col-md-3 px-2 ">{{exp.solde}}</td>
 
-                            <td>
-                                <div class="btn-group">
-                                    <button @click="infoExportateur(exp)" class="btn text-info">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-
-                                    <button @click="launchModal(exp, 'update')" class="btn text-primary">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-
-                                    <button @click="deleteExportateur(exp, 'warnDeletion')" class="btn text-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
+                            
                         </tr>
                     </transition-group>
 
@@ -203,7 +204,10 @@ export default {
     },
     created() {
         this.getExportateurList()
-        console.log(this.searchDate)
+        window.addEventListener('click', ()=>{
+            document.getElementById("context-menu").classList.remove('active')
+        })
+       
     },
     computed: {
         exportateurCounter() {
@@ -211,6 +215,17 @@ export default {
         }
     },
     methods: {
+        contextMenu(event, exp) {
+
+            this.currentExp = exp
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+            context_menu.classList.remove('active')
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
+
+        },
         refresh() {
             this.searchBool = false
             this.search = null
@@ -269,6 +284,11 @@ export default {
                 this.currentExp = exp
                 this.launchModal()
             } else if (!msg) {
+                if (exp.util) {
+                        this.modalText = 'Cet Exportateur ne peut être supprimé car il a deja effectué plusieurs transactions'
+                        this.launchModal()
+                        return
+                    }
                 window.models.Exportateur.deleteOne({
                         _id: exp._id
                     })

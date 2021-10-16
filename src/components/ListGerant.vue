@@ -1,5 +1,20 @@
 <template>
 <div>
+    <div id="context-menu">
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoGerant(currentGer)">
+            <i class="bi bi-info-circle-fill"></i> Info
+        </div>
+        <div class="item" @click="launchModal(currentGer, 'update')">
+            <i class="bi bi-pencil-fill"></i> Modifier
+        </div>
+        <div class="item" @click="deleteGerant(currentGer, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i> Supprimer
+        </div>
+    </div>
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -93,7 +108,7 @@
         <div class="d-flex justify-content-end my-1">
             <div class="btn-group text-center  shadow-sm rounded">
                 <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
-                <button @click="printDocument('list', 'magasins')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                <button @click="printDocument('list', 'gerants')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
                 <button class="btn btn-warning" @click="refresh()">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
@@ -106,47 +121,34 @@
             <div class="col-md-8  pe-0">
                 <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
                     <div v-if="searchBool">
-                        <input @keyup.enter="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un gerant par son nom, prenom, addresse ou numero de telephone">
+                        <input @keyup.enter="getGerantList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un gerant par son nom, prenom, addresse ou numero de telephone">
                     </div>
                 </transition>
 
             </div>
         </div>
-
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Nom et Prenom</th>
-                    <th>Telephone</th>
-                    <th>Magasin</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <transition-group tag="tbody" mode="out-in" name="slide">
-                <tr class="" v-for="(ger, index ) in gerants" @dblclick="infoGerant(ger)" :key="ger.nom">
-                    <th class="col-md-2"> {{index+1}}</th>
-                    <td class="col-md-4 px-2 ">{{ger.nom}} {{ger.prenom}}</td>
-                    <td class="col-md-3 px-2 ">{{ger.telephone}}</td>
-                    <td class="col-md-3 px-2 ">{{ger.magasin}}</td>
-                    <td>
-                        <div class="btn-group">
-                            <button @click="infoGerant(ger)" class="btn text-info">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-
-                            <button @click="launchModal(ger, 'update')" class="btn text-primary">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-
-                            <button @click="deleteGerant(ger, 'warnDeletion')" class="btn text-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </transition-group>
-        </table>
+        <div id="list">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nom et Prenom</th>
+                        <th>Telephone</th>
+                        <th>Magasin</th>
+                        
+                    </tr>
+                </thead>
+                <transition-group tag="tbody" mode="out-in" name="slide">
+                    <tr class="" v-for="(ger, index ) in gerants" @dblclick="infoGerant(ger)" :key="ger.nom" @contextmenu="contextMenu($event, ger)">
+                        <th class="col-md-2"> {{index+1}}</th>
+                        <td class="col-md-4 px-2 ">{{ger.nom}} {{ger.prenom}}</td>
+                        <td class="col-md-3 px-2 ">{{ger.telephone}}</td>
+                        <td class="col-md-3 px-2 ">{{ger.magasin}}</td>
+                        
+                    </tr>
+                </transition-group>
+            </table>
+        </div>
     </div>
 
 </div>
@@ -172,13 +174,15 @@ export default {
                 status: false
             },
             gereurs: [],
+            searchBool: false
         }
     },
     created() {
-        this.getMagasinList()
-        setTimeout(() => {
-            this.getGerantList()
-        }, 150)
+        this.getGerantList()
+        window.addEventListener('click', ()=>{
+            document.getElementById("context-menu").classList.remove('active')
+        })
+
     },
     computed: {
         gerantCounter() {
@@ -186,7 +190,22 @@ export default {
         }
     },
     methods: {
+        contextMenu(event, ger) {
+            this.currentGer = ger
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+            context_menu.classList.remove('active')
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
 
+        },
+        refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getGerantList()
+
+        },
         launchModal(ger, name) {
             if (!name) {
                 let myModal = document.getElementById('gerantModal')
@@ -203,7 +222,7 @@ export default {
                 const updateModal = new bootstrap.Modal(myModal, {
                     keyboard: false
                 })
-                
+
                 updateModal.show()
 
             }
@@ -228,19 +247,23 @@ export default {
                         nom: ger.magasin
                     })
                     .then((mag) => {
-        
-                        mag.gerants.splice(ger.__index)
-                        mag.save((err, doc) => {
-                            if (err) {
-                                console.log(err)
-                            } else {
-                                console.log(doc)
-                                this.alertMessage = 'Pisteur supprimé avec succès.'
-                                this.operation.status = true
-                                this.getMagasinList()
-                                this.getGerantList()
-                            }
-                        })
+                        console.log(ger)
+                        console.log(ger.__index)
+                        if (ger.nom + ger.prenom == this.currentGer.nom + this.currentGer.prenom) {
+
+                            mag.gerants.splice(ger.__index, 1)
+
+                            mag.save((err, doc) => {
+                                if (err) {
+                                    console.log(err)
+                                } else {
+                                    console.log(doc)
+                                    this.alertMessage = 'Gerant supprimé avec succès.'
+                                    this.operation.status = true
+                                    this.getGerantList()
+                                }
+                            })
+                        }
 
                     })
                     .catch((err) => {

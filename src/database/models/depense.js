@@ -21,6 +21,10 @@ const depenseSchema = new Schema({
     pisteur: {
         type: Schema.Types.ObjectId, ref: 'pisteur',
         required: false
+    },
+    util: {
+        type: Boolean,
+        required: true
     }
     
 

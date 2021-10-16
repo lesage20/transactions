@@ -28,7 +28,10 @@ const pisteurSchema = new Schema({
         required: true
     },
     produits: [produitSchema],
-
+    util: {
+        type: Boolean,
+        required: true
+    }
 
 }, {timestamps: true, collection: 'pisteur'})
 pisteurSchema.index({"$**": 'text'})

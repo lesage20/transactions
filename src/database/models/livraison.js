@@ -13,6 +13,10 @@ let livraisonSchema = Schema({
     chargement: {
         type: Schema.Types.ObjectId, ref: 'chargement',
         required: true
+    },
+    util: {
+        type: Boolean,
+        required: true
     }
 }, {timestamps: true, collection: 'livraison'})
 

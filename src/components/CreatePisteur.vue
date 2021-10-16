@@ -122,6 +122,7 @@ export default {
                                 solde: 0,
                                 telephone: this.telephone
                             })
+                            doc.util = true
                             doc.save()
                                 .then((res) => {
                                     console.log(res)
@@ -155,6 +156,7 @@ export default {
                     nb_cni: this.nb_cni,
                     telephone: this.telephone,
                     solde: 0,
+                    util: false
                 }).then((res) => {
                     console.log(res)
 

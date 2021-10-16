@@ -1,5 +1,20 @@
 <template>
 <div>
+     <div id="context-menu" >
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoProduit(currentProd)">
+            <i class="bi bi-info-circle-fill"></i>  Info
+        </div>
+        <div class="item" @click="launchModal(currentProd, 'update')">
+            <i class="bi bi-pencil-fill"></i>  Modifier
+        </div>
+        <div class="item" @click="deleteProduit(currentProd, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i>  Supprimer
+        </div>
+    </div>
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -93,7 +108,7 @@
         <div class="d-flex justify-content-end my-1">
             <div class="btn-group text-center  shadow-sm rounded">
                 <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
-                <button @click="printDocument('list', 'magasins')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                <button @click="printDocument('list', 'produits')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
                 <button class="btn btn-warning" @click="refresh()">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
@@ -106,49 +121,38 @@
             <div class="col-md-8  pe-0">
                 <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
                     <div v-if="searchBool">
-                        <input @keyup.enter="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un produit par son nom, prixAchat, benefice ou numero de telephone">
+                        <input @keyup.enter="searchProduit(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un produit par son nom, prixAchat, benefice ou numero de telephone">
                     </div>
                 </transition>
 
             </div>
         </div>
+        <div id="list">
 
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Nom </th>
-                    <th>Prix Achat</th>
-                    <th>Prix Vente</th>
-                    <th>Magasin</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <transition-group tag="tbody" mode="out-in" name="slide">
-                <tr class="" v-for="(prod, index ) in produits" @dblclick="infoProduit(prod)" :key="prod.nom">
-                    <th class="col-md-2"> {{index+1}}</th>
-                    <td class="col-md-3 px-2 ">{{prod.nom}} </td>
-                    <td class="col-md-2 px-2 ">{{prod.prixAchat}}</td>
-                    <td class="col-md-2 px-2 ">{{prod.benefice}}</td>
-                    <td class="col-md-3 px-2 ">{{prod.magasin}}</td>
-                    <td>
-                        <div class="btn-group">
-                            <button @click="infoProduit(prod)" class="btn text-info">
-                                <i class="bi bi-info-circle"></i>
-                            </button>
-
-                            <button @click="launchModal(prod, 'update')" class="btn text-primary">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-
-                            <button @click="deleteProduit(prod, 'warnDeletion')" class="btn text-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </transition-group>
-        </table>
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nom </th>
+                        <th>Prix Achat</th>
+                        <th>Benefice</th>
+                        <th>Magasin</th>
+                       
+                    </tr>
+                </thead>
+                <transition-group tag="tbody" mode="out-in" name="slide">
+                    <tr class="" v-for="(prod, index ) in produits" @dblclick="infoProduit(prod)" :key="prod.nom" @contextmenu="contextMenu($event, prod)">
+                        <th class="col-md-2"> {{index+1}}</th>
+                        <td class="col-md-3 px-2 ">{{prod.nom}} </td>
+                        <td class="col-md-2 px-2 ">{{prod.prixAchat}}</td>
+                        <td class="col-md-2 px-2 ">{{prod.benefice}}</td>
+                        <td class="col-md-3 px-2 " v-if="prod.magasin">{{prod.magasin}} (magasin)</td>
+                        <td class="col-md-3 px-2 " v-else>{{prod.pisteur}} (pisteur)</td>
+                        
+                    </tr>
+                </transition-group>
+            </table>
+        </div>
     </div>
 
 </div>
@@ -164,7 +168,7 @@ export default {
     mixins: [ListsMixin, printMixin],
     data() {
         return {
-            isBool: false,
+            searchBool: false,
             currentProd: {},
             produits: [],
             modalAction: 'detail',
@@ -178,18 +182,57 @@ export default {
         }
     },
     created() {
+        this.getIndependantPisteurList()
         this.getMagasinList()
         setTimeout(() => {
+            console.log(this.independantPisteurs)
             this.getProduitList()
-        }, 80)
+        }, 200)
+        window.addEventListener('click', ()=>{
+            document.getElementById("context-menu").classList.remove('active')
+        })
     },
     computed: {
         produitCounter() {
             return this.produits.length
+        },
+        allProduits(){
+            return this.receptionsForSearch 
         }
     },
     methods: {
+        contextMenu(event, prod) {
 
+            this.currentProd = prod
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+            context_menu.classList.remove('active')
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
+
+        },
+        refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getProduitList()
+        },
+        searchProduit(searchString){
+            
+            let produits = this.allProduits
+            this.produits = []
+            produits.forEach((el)=>{
+                if (el.nom.toLowerCase() .includes(searchString.toLowerCase())){
+                    this.produits.push(el)
+                } 
+                else if (el.prixAchat.toString() == searchString) {
+                     this.produits.push(el)
+                }
+                else if (el.benefice.toString() == searchString) {
+                     this.produits.push(el)
+                }
+            })
+        },
         launchModal(prod, name) {
             if (!name) {
                 let myModal = document.getElementById('produitModal')
@@ -210,7 +253,7 @@ export default {
             }
 
         },
-      
+
         infoProduit(pist) {
             this.modalAction = 'detail'
 
@@ -231,7 +274,7 @@ export default {
                     })
                     .then((mag) => {
 
-                        mag.produits.splice(prod.__index)
+                        mag.produits.splice(prod.__index,1)
                         mag.save((err, doc) => {
                             if (err) {
                                 console.log(err)

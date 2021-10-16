@@ -28,7 +28,6 @@ async function createWindow() {
         }
     })
 
-
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
         await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -36,6 +35,7 @@ async function createWindow() {
             win.webContents.openDevTools()
         }
     } else {
+        win.removeMenu()
         createProtocol('app')
         // Load the index.html when not in development
         win.loadURL('app://./index.html')
@@ -44,7 +44,7 @@ async function createWindow() {
     ipcMain.on("getPrinterList", (event) => {
         const list = win.webContents.getPrinters()
         win.webContents.send('getPrinterList', win.webContents.getPrinters())
-       
+
     })
     ipcMain.on("print", (event, content, title) => {
         printWindow()
@@ -52,7 +52,7 @@ async function createWindow() {
 
     })
     ipcMain.on("readyToPrint", (event, content, title) => {
-        
+
         prinWin.webContents.print()
 
     })
@@ -71,13 +71,13 @@ async function printWindow() {
             enableRemoteModule: true,
             preload: path.join(__dirname, 'preload.js'),
         }
-        
+
     })
     await prinWin.loadURL(process.env.WEBPACK_DEV_SERVER_URL + "printer.html")
     prinWin.on("closed", () => {
         prinWin = undefined;
     });
-    
+
 
 
 }

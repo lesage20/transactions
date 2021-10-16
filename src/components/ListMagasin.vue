@@ -1,5 +1,20 @@
 <template>
 <div>
+     <div id="context-menu" >
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoMag(currentMag)">
+            <i class="bi bi-info-circle-fill"></i>  Info
+        </div>
+        <div class="item" @click="launchModal(currentMag, 'update')">
+            <i class="bi bi-pencil-fill"></i>  Modifier
+        </div>
+        <div class="item" @click="deleteMagasin(currentMag, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i>  Supprimer
+        </div>
+    </div>
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -148,30 +163,20 @@
                             <th scope="col">Nom</th>
                             <th scope="col">Code</th>
                             <th scope="col">Ville</th>
+                            <th scope="col">Addresse</th>
                             <th scope="col">Solde</th>
-                            <th scope="col">Action</th>
+                            
                         </tr>
                     </thead>
                     <transition-group tag="tbody" mode="out-in" name="slide">
-                        <tr v-for="(mag, index) in magasins" :key="mag.nom" @dblclick="infoMag(mag)">
+                        <tr v-for="(mag, index) in magasins" :key="mag.nom" @dblclick="infoMag(mag)"  @contextmenu="contextMenu($event, mag)">
                             <th scope="row">{{index+1}}</th>
                             <td class="col-md-3">{{mag.nom}}</td>
                             <td class="col-md-2">{{mag.code}}</td>
                             <td class="col-md-2">{{mag.ville}}</td>
-                            <td class="col-md-2">{{mag.solde}}</td>
-                            <td class="col-md-2">
-                                <div class="btn-group">
-                                    <button @click="infoMag(mag)" class="btn text-primary">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-                                    <button @click="launchModal(mag, 'update')" class="btn text-success ">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-                                    <button @click="deleteMagasin(mag, 'warnDeletion')" class="btn text-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
+                            <td class="col-md-2">{{mag.addresse}}</td>
+                            <td class="col-md-2">{{mag.solde}} FCFA</td>
+                            
                         </tr>
                     </transition-group>
 
@@ -212,6 +217,9 @@ export default {
     },
     created() {
         this.getMagasinList()
+        window.addEventListener('click', ()=>{
+            document.getElementById("context-menu").classList.remove('active')
+        })
     },
     computed: {
         currentMagPistCounter() {
@@ -226,6 +234,17 @@ export default {
         }
     },
     methods: {
+        contextMenu(event, mag) {
+
+            this.currentMag = mag
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+            context_menu.classList.remove('active')
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
+
+        },
         refresh() {
             this.searchBool = false
             this.search = null
@@ -285,10 +304,17 @@ export default {
                 this.currentMag = mag
                 this.launchModal()
             } else if (!msg) {
+                
                 if (mag.nom) {
+                    if (mag.util) {
+                        this.modalText = 'Ce Magasin ne peut être supprimé une ou plusieurs operations dépendent   de ce magasin'
+                        
+                        this.launchModal()
+                        return
+                    }
                     this.operation.nom = 'delete'
                     window.models.Magasin.deleteOne({
-                            nom: mag.nom
+                            _id: mag._id
                         })
                         .then(() => {
 

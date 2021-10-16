@@ -86,8 +86,7 @@ const ListsMixin
 export default {
     /* eslint-env mongoose */
     name: 'Depense',
-    mixins: [ListsMixin
-],
+    mixins: [ListsMixin],
     data() {
         return {
             motif: null,
@@ -96,7 +95,8 @@ export default {
             magasin: null,
             pisteur: null,
             modalText: null,
-            depenseur: 'magasin'
+            depenseur: 'magasin',
+            produit: null
 
         }
     },
@@ -119,7 +119,8 @@ export default {
                         motif: this.motif,
                         montant: this.montant,
                         magasin: this.magasin._id,
-                        date: this.date
+                        date: this.date,
+                        util: false
                     })
 
                     .then((res) => {
@@ -141,7 +142,7 @@ export default {
                             .then((doc) => {
 
                                 doc.solde += res.montant
-
+                                doc.util = true
                                 doc.save((err, dc) => {
                                     if (err) console.log("magasin concerné: ", err)
                                     else console.log('magasin concerné: success: ', dc)
@@ -168,7 +169,8 @@ export default {
                         motif: this.motif,
                         montant: this.montant,
                         pisteur: this.pisteur._id,
-                        date: this.date
+                        date: this.date,
+                        util: false
                     })
 
                     .then((res) => {
@@ -187,6 +189,7 @@ export default {
                                 console.log(doc)
 
                                 doc.solde = res.montant
+                                doc.util = true
                                 doc.save((err) => {
                                     if (err) console.log("pisteur concerné: ", err)
 

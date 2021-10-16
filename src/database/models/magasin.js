@@ -52,6 +52,10 @@ const magasinSchema = new Schema({
     solde: {
         type: Number,
         required: true
+    },
+    util: {
+        type: Boolean,
+        required: true
     }
 
 

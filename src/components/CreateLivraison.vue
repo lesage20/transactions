@@ -113,7 +113,8 @@ export default {
             window.models.Livraison.create({
                     chargement: this.chargement,
                     exportateur: this.exportateur,
-                    date: this.date
+                    date: this.date,
+                    util: false
                 })
                 .then(() => {
                     window.models.Exportateur.findOne({
@@ -138,6 +139,7 @@ export default {
                         })
                         .then((chgt) => {
                             chgt.status = "livré"
+                            chgt.util = true
                             chgt.save()
                                 .then(() => {
                                     console.log("Chargement livré avec succès")

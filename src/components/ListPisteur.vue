@@ -1,6 +1,20 @@
 <template>
 <div>
-   
+     <div id="context-menu" >
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoPisteur(currentPist)">
+            <i class="bi bi-info-circle-fill"></i>  Info
+        </div>
+        <div class="item" @click="launchModal(currentPist, 'update')">
+            <i class="bi bi-pencil-fill"></i>  Modifier
+        </div>
+        <div class="item" @click="deletePisteur(currentPist, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i>  Supprimer
+        </div>
+    </div>
     <div class="modal fade" tabindex="-1" id="pisteurModal">
         <div class="modal-dialog modal-dialog-centered ">
 
@@ -87,13 +101,13 @@
                 <div class="col-md-8  pe-0">
                     <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
                         <div v-if="searchBool">
-                            <input @keyup.enter="getPisteurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
+                            <input @keyup.enter="searchPisteur(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
                         </div>
                     </transition>
 
                 </div>
             </div>
-           
+
             <div id="list">
                 <table class="table table-bordered table-striped table-hover">
                     <thead>
@@ -102,33 +116,22 @@
                             <th>Nom et Prenom</th>
                             <th>Telephone</th>
                             <th>Statut</th>
+                            <th>Magasin</th>
                             <th>Solde</th>
-                            <th>Actions</th>
+                            
                         </tr>
                     </thead>
                     <transition-group tag="tbody" mode="out-in" name="slide">
-                        <tr class="" v-for="(pist, index ) in pisteurs" @dblclick="infoPisteur(pist)" :key="pist.nom">
+                        <tr class="" v-for="(pist, index ) in pisteurs" @dblclick="infoPisteur(pist)" :key="pist.nom" @contextmenu="contextMenu($event, pist)">
                             <th> {{index+1}}</th>
-                            <td class="col-md-4 px-2 ">{{pist.nom}} {{pist.prenom}}</td>
-                            <td class="col-md-3 px-2 ">{{pist.telephone}}</td>
-                            <td class="col-md-3 px-2 ">{{pist.statut}}</td>
-                            <td class="col-md-3 px-2 ">{{pist.solde || 0 }}</td>
+                            <td class="col-md-3 px-2 ">{{pist.nom}} {{pist.prenom}}</td>
+                            <td class="col-md-2 px-2 ">{{pist.telephone}}</td>
+                            <td class="col-md-2 px-2 ">{{pist.statut}}</td>
+                            <td class="col-md-2 px-2 " v-if="pist.magasin">{{pist.magasin}}</td>
+                            <td class="col-md-2 px-2 text-center" v-else>{{'-'}}</td>
+                            <td class="col-md-3 px-2 ">{{pist.solde || 0 }} FCFA</td>
 
-                            <td>
-                                <div class="btn-group">
-                                    <button @click="infoPisteur(pist)" class="btn text-info">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-
-                                    <button @click="launchModal(pist, 'update')" class="btn text-primary">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-
-                                    <button @click="deletePisteur(pist, 'warnDeletion')" class="btn text-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
+                           
                         </tr>
                     </transition-group>
 
@@ -143,14 +146,12 @@
 
 <script>
 const bootstrap = require('bootstrap')
-const ListsMixin
- = require('../mixins/lists').default
+const ListsMixin = require('../mixins/lists').default
 const printMixin = require('../mixins/printDocument').default
 
 export default {
     name: 'ListMagasin',
-    mixins: [ListsMixin
-, printMixin],
+    mixins: [ListsMixin, printMixin],
     data() {
         return {
             searchBool: false,
@@ -163,19 +164,74 @@ export default {
                 status: false
             },
             pisteurs: [],
+            pisteursForSearch: []
         }
     },
     created() {
         this.getMagasinList()
         this.getPisteurList()
+        window.addEventListener('click', ()=>{
+            document.getElementById("context-menu").classList.remove('active')
+        })
 
     },
     computed: {
         pisteurCounter() {
             return this.pisteurs.length
+        },
+        allPisteurs() {
+            return this.pisteursForSearch
         }
     },
     methods: {
+        contextMenu(event, pist) {
+
+            this.currentPist = pist
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+            context_menu.classList.remove('active')
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
+
+        },
+        searchPisteur(searchString) {
+
+            let pisteurs = this.allPisteurs
+            this.pisteurs = []
+            pisteurs.forEach((el) => {
+                if (el.nom.toLowerCase().includes(searchString.toLowerCase())) {
+                    this.pisteurs.push(el)
+                } else if (el.prenom.toLowerCase().includes(searchString.toLowerCase())) {
+                    this.pisteurs.push(el)
+                } else if (el.telephone.includes(searchString.toLowerCase())) {
+                    this.pisteurs.push(el)
+                } else if (el.statut.toLowerCase() == searchString.toLowerCase()) {
+                    this.pisteurs.push(el)
+                }
+                if (this.pisteurs.indexOf(el) == -1) {
+                    if (el.magasin) {
+                        if (el.magasin.toLowerCase().includes(searchString.toLowerCase())) {
+                            this.pisteurs.push(el)
+                        }
+                    }
+                } 
+                if (this.pisteurs.indexOf(el) == -1) {
+            
+                    if (el.solde) {
+                        if (el.solde.toString().includes(searchString.toLowerCase())) {
+                            this.pisteurs.push(el)
+                        }
+                    }
+                }
+
+            })
+        },
+        refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getPisteurList()
+        },
         launchModal() {
             var myModal = document.getElementById('pisteurModal')
             const pisteurModal = new bootstrap.Modal(myModal, {
@@ -206,12 +262,17 @@ export default {
                 this.launchModal()
             } else if (!msg) {
                 if (pist.nom && (pist.magasin == undefined)) {
+                    if (pist.util) {
+                        this.modalText = 'Ce pisteur ne peut être supprimé une ou plusieurs operations dépendent de lui'
+                        this.launchModal()
+                        return
+                    }
                     this.operation.nom = 'delete'
                     window.models.Pisteur.deleteOne({
                             nom: pist.nom
                         })
                         .then((res) => {
-                            this.hideModal()
+                            
                             console.log(res)
                             this.alertMessage = 'Pisteur supprimé avec succès.'
                             this.operation.status = true
@@ -231,7 +292,7 @@ export default {
                         })
                         .then((mag) => {
                             this.hideModal()
-                            mag.pisteurs.splice(pist.__index)
+                            mag.pisteurs.splice(pist.__index, 1)
                             mag.save((err, doc) => {
                                 if (err) {
                                     console.log(err)

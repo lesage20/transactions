@@ -80,7 +80,8 @@ export default {
                 prenom: this.prenom,
                 solde: 0,
                 addresse: this.addresse,
-                telephone: this.telephone
+                telephone: this.telephone,
+                util: false
             }).then((res) => {
                 console.log(res)
 

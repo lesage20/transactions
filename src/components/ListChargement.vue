@@ -1,5 +1,20 @@
 <template>
 <div>
+    <div id="context-menu">
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoChgt(currentChgt)">
+            <i class="bi bi-info-circle-fill"></i> Info
+        </div>
+        <div class="item" @click="launchModal(currentChgt, 'update')">
+            <i class="bi bi-pencil-fill"></i> Modifier
+        </div>
+        <div class="item" @click="deleteChgt(currentChgt, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i> Supprimer
+        </div>
+    </div>
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -42,7 +57,7 @@
                 <div class="modal-header ">
                     <h4 class="modal-title ps-5 text-center text-info" v-if="modalAction=='detail'"><i class="bi bi-info-circle-fill text-info"></i> Détails </h4>
                     <h4 class="modal-title  text-center text-warning" v-if="modalAction=='delete'"> <i class="bi bi-exclamation-octagon-fill text-warning"></i> Supprimer </h4>
-                    <h4 class="modal-title  text-center text-warning" v-if="modalAction=='delete'"> <i class="bi bi-exclamation-octagon-fill text-warning"></i> Avertissement </h4>
+                    <h4 class="modal-title  text-center text-warning" v-if="modalAction=='avertissement'"> <i class="bi bi-exclamation-octagon-fill text-warning"></i> Avertissement </h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -51,7 +66,7 @@
 
                             <div class=" justify-content-center ">
                                 <div class="">
-                                    N° Fiche Chargement : {{currentChgt.nb_fiche}}
+                                    N° Fiche : {{currentChgt.nb_fiche}}
                                 </div>
 
                                 <div class="">
@@ -64,7 +79,7 @@
                                     Poid Net : {{currentChgt.poid_net}} Kg
                                 </div>
                                 <div class="">
-                                    Nombre de Sacs: {{currentChgt.nb_sac}} 
+                                    Nombre de Sacs: {{currentChgt.nb_sac}}
                                 </div>
                                 <div class="" v-if="currentChgt.magasin">
                                     Magasin : {{currentChgt.magasin.nom}}
@@ -115,7 +130,7 @@
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
                 <button class="btn btn-light ">
-                    Total: {{depenseCounter}}
+                    Total: {{chargementCounter}}
                 </button>
             </div>
         </div>
@@ -124,7 +139,7 @@
                 <div class="col-md-8  pe-0">
                     <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
                         <div v-if="searchBool">
-                            <input @keyup.enter="getChargementList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
+                            <input @keyup.enter="searchChargement(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
                         </div>
                     </transition>
                 </div>
@@ -135,42 +150,29 @@
                         <tr>
                             <th>#</th>
                             <th>N° Fiche</th>
-                            <th>Date</th>
                             <th>Produit</th>
                             <th>Poid Net</th>
-                            <th>Magasin/Pisteur</th>
                             <th>Prix Total</th>
                             <th>Bénéfice</th>
+                            <th>Magasin/Pisteur</th>
+                            <th>Date</th>
                             <th>Status</th>
-                            <th>Actions</th>
+
                         </tr>
                     </thead>
                     <transition-group tag="tbody" mode="out-in" name="slide">
-                        <tr class="" v-for="(chgt, index) in chargements" :key="chgt.id" @dblclick="infoChgt(chgt)">
+                        <tr class="" v-for="(chgt, index) in chargements" :key="chgt.id" @dblclick="infoChgt(chgt)" @contextmenu="contextMenu($event, chgt)">
                             <th> {{index+1}}</th>
                             <td class="px-2">{{chgt.nb_fiche}} </td>
-                            <td class="px-2">{{chgt.date.toLocaleDateString()}}</td>
                             <td class="px-2">{{chgt.produit}} </td>
-                            <td class="px-2">{{chgt.poid_net}}</td>
-                            <td class="px-2">{{chgt.magasin.nom}}</td>
-                            <td class="px-2">{{chgt.prix_total}}</td>
+                            <td class="px-2">{{chgt.poid_net}} Kg</td>
+                            <td class="px-2">{{chgt.prix_total}} FCFA</td>
                             <td class="px-2">{{chgt.benefice || 0}} FCFA</td>
+                            <td class="px-2" v-if="chgt.magasin != undefined && chgt.magasin != null">{{chgt.magasin.nom}} (magasin) </td>
+                            <td class="px-2" v-else>{{chgt.pisteur.nom}} {{chgt.pisteur.prenom}} (pisteur)</td>
+                            <td class="px-2">{{chgt.date.toLocaleDateString()}}</td>
                             <td class="px-2">{{chgt.status}}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <button @click="infoChgt(chgt)" class="btn text-info">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
 
-                                    <button @click="launchModal(chgt, 'update')" class="btn text-primary">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-
-                                    <button @click="deleteChgt(chgt, 'warnDeletion')" class="btn text-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
                         </tr>
                     </transition-group>
 
@@ -205,20 +207,83 @@ export default {
                 name: '',
                 status: false
             },
+
         }
     },
     created() {
         this.getMagasinList()
         this.getChargementList()
+        window.addEventListener('click', () => {
+            document.getElementById("context-menu").classList.remove('active')
+        })
+
     },
     computed: {
-        depenseCounter() {
+        chargementCounter() {
             return this.chargements
                 .length
+        },
+        allChargement() {
+            return this.chgtsForSearch
         }
     },
     methods: {
-        
+        contextMenu(event, chgt) {
+            this.currentChgt = chgt
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
+
+        },
+        refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getChargementList()
+
+        },
+        searchChargement(searchString) {
+            console.log(searchString)
+            let chgts = this.allChargement
+            this.chargements = []
+            chgts.forEach((el) => {
+                console.log(el)
+                if (el.nb_fiche.toLowerCase().includes(searchString.toLowerCase())) {
+                    this.chargements.push(el)
+                } else if (el.produit.toLowerCase().includes(searchString.toLowerCase())) {
+                    this.chargements.push(el)
+                } else if (el.status.toLowerCase().includes(searchString.toLowerCase())) {
+                    this.chargements.push(el)
+                } else if (el.poid_net.toString().includes(searchString.toLowerCase())) {
+                    this.chargements.push(el)
+                } else if (el.poid_brut.toString().includes(searchString.toLowerCase())) {
+                    this.chargements.push(el)
+                } else if (el.prix_total.toString().includes(searchString.toLowerCase())) {
+                    this.chargements.push(el)
+                } else if (el.benefice.toString().includes(searchString.toLowerCase())) {
+                    this.chargements.push(el)
+                }
+
+                if (this.chargements.indexOf(el) == -1) {
+                    if (el.magasin) {
+                        if (el.magasin.nom.toLowerCase().includes(searchString.toLowerCase())) {
+                            this.chargements.push(el)
+                        }
+                    }
+                }
+                if (this.chargements.indexOf(el) == -1) {
+
+                    if (el.pisteur) {
+                        if (el.pisteur.nom.toLowerCase().includes(searchString.toLowerCase())) {
+                            this.chargements.push(el)
+                        }
+                    }
+                }
+
+            })
+        },
         launchModal(chgt, name) {
             if (!name) {
                 let myModal = document.getElementById('chargementModal')
@@ -239,7 +304,7 @@ export default {
             }
 
         },
-        
+
         infoChgt(chgt) {
             this.modalAction = 'detail'
             this.currentChgt = chgt
@@ -261,12 +326,17 @@ export default {
                 this.launchModal()
             } else if (!msg) {
                 if (chgt) {
+                    if (chgt.status == 'livré') {
+                        this.modalText = 'Ce chargement ne peut être supprimé car il a deja été livré'
+                        this.launchModal()
+                        return
+                    }
                     this.operation.nom = 'delete'
                     window.models.Chargement.deleteOne({
                             _id: chgt._id
                         })
                         .then((res) => {
-                            
+
                             console.log(res)
                             this.alertMessage = 'Chargement supprimé avec succès.'
                             this.operation.status = true
@@ -290,12 +360,36 @@ export default {
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
 .list-group-item {
     text-align: center !important;
 }
 
 .bg-gray {
     background-color: rgb(238, 236, 236) !important;
+}
+
+#context-menu {
+    position: fixed;
+    width: 150px;
+    z-index: 1000;
+    background: rgba(44, 44, 44, 0.7);
+    color: rgb(165, 165, 165);
+    border-radius: 5px;
+    padding: 5px;
+    transform: scale(0);
+    transform-origin: center;
+    transition: position 100ms ease-in-out;
+
+}
+
+#context-menu.active {
+    transform: scale(1);
+    transition: transform 200ms ease-in-out;
+}
+
+#context-menu .item:hover {
+    background: rgba(70, 69, 69, 0.9);
+    cursor: pointer;
 }
 </style>

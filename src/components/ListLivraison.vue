@@ -1,5 +1,20 @@
 <template>
 <div>
+     <div id="context-menu" >
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoLivraison(currentLiv)">
+            <i class="bi bi-info-circle-fill"></i>  Info
+        </div>
+        <div class="item" @click="launchModal(currentLiv, 'update')">
+            <i class="bi bi-pencil-fill"></i>  Modifier
+        </div>
+        <div class="item" @click="deleteLivraison(currentLiv, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i>  Supprimer
+        </div>
+    </div>
     <div class="modal fade" tabindex="-1" id="livraisonModal">
         <div class="modal-dialog modal-dialog-centered ">
             <div class="modal-content">
@@ -13,21 +28,16 @@
                         <div class="p-2  fs-3   rounded col-md-10">
 
                             <div class=" justify-content-center ">
-                                <div class="">
-                                    Motif : {{currentDep.motif}}
+                                <div class="" v-if="currentLiv.exportateur!=null">
+                                    Exportateur : {{currentLiv.exportateur}}
                                 </div>
                                 <div class="">
-                                    Montant : {{currentDep.montant}} FCFA
+                                    Chargement : {{currentLiv.chargement}}
                                 </div>
                                 <div class="">
-                                    Date : {{currentDep.date.toLocaleDateString()}}
+                                    Date : {{currentLiv.date.toLocaleDateString()}}
                                 </div>
-                                <div class="" v-if="currentDep.magasin">
-                                    Magasin : {{currentDep.magasin.nom}}
-                                </div>
-                                <div class="" v-if="!currentDep.magasin">
-                                    Pisteur: {{currentDep.pisteur}}
-                                </div>
+                                
 
                             </div>
                         </div>
@@ -43,7 +53,7 @@
 
                 <div class="modal-footer" v-if="modalAction=='delete'">
                     <button type="button" class="btn btn-secondary px-2" data-bs-dismiss="modal">Annuler</button>
-                    <button type="button" @click="deleteLivraison(currentDep)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
+                    <button type="button" @click="deleteLivraison(currentLiv)" data-bs-dismiss="modal" class="btn btn-danger px-2">Supprimer <i class="bi bi-trash-fill"></i> </button>
                 </div>
             </div>
         </div>
@@ -60,7 +70,7 @@
          <div class="d-flex justify-content-end my-1">
             <div class="btn-group text-center  shadow-sm rounded">
                 <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
-                <button @click="printDocument('list', 'exportateurs')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                <button @click="printDocument('list', 'livraisons')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
                 <button class="btn btn-warning" @click="refresh()">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
@@ -74,7 +84,7 @@
                 <div class="col-md-8  pe-0">
                     <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
                         <div v-if="searchBool">
-                            <input @keyup.enter="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
+                            <input @keyup.enter="searchLivraison(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
                         </div>
                     </transition>
 
@@ -88,32 +98,18 @@
                             <th>Exportateur</th>
                             <th>Chargement</th>
                             <th>Date</th>
-                            <th>Actions</th>
+                            
                         </tr>
                     </thead>
                     <transition-group tag="tbody" mode="out-in" name="slide">
-                        <tr class="" v-for="(dep, index) in livraisons" :key="dep.id" @dblclick="infoLivraison(dep)">
+                        <tr class="" v-for="(liv, index) in livraisons" :key="liv.id" @dblclick="infoLivraison(liv)" @contextmenu="contextMenu($event, liv)">
                             <th> {{index+1}}</th>
-                            <td class="col-md-4 px-2 ">{{dep.exportateur.nom}} {{dep.exportateur.prenom}} </td>
+                            <td class="col-md-4 px-2 ">{{liv.exportateur.nom}} {{liv.exportateur.prenom}} </td>
 
-                            <td class="col-md-3 px-2 ">{{dep.chargement.nb_fiche}}</td>
-                            <td class="col-md-3 px-2 ">{{dep.date.toLocaleDateString()}}</td>
+                            <td class="col-md-3 px-2 ">{{liv.chargement.nb_fiche}}</td>
+                            <td class="col-md-3 px-2 ">{{liv.date.toLocaleDateString()}}</td>
 
-                            <td>
-                                <div class="btn-group">
-                                    <button @click="infoLivraison(dep)" class="btn text-info">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-
-                                    <button @click="launchModal(exp, 'update')" class="btn text-primary">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-
-                                    <button @click="deleteExportateur(exp, 'warnDeletion')" class="btn text-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
+                            
                         </tr>
                     </transition-group>
 
@@ -138,7 +134,7 @@ export default {
     data() {
         return {
             searchBool: false,
-            currentDep: {
+            currentLiv: {
                 date: new Date()
             },
             livraisons: [],
@@ -154,14 +150,58 @@ export default {
     created() {
         this.getMagasinList()
         this.getLivraisonList()
+        window.addEventListener('click', ()=>{
+            document.getElementById("context-menu").classList.remove('active')
+        })
     },
     computed: {
         livraisonCounter() {
             return this.livraisons.length
+        },
+        allLivraisons(){
+            return this.livraisonsForSearch
         }
+        
     },
     methods: {
-        
+        contextMenu(event, liv) {
+
+            this.currentLiv = liv
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+            context_menu.classList.remove('active')
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
+
+        },
+        searchLivraison(searchString){
+            console.log(searchString)
+            let livraisons = this.allLivraisons
+            this.livraisons = []
+            livraisons.forEach((el)=>{
+                console.log(el)
+                if (el.exportateur.nom.toLowerCase().includes(searchString.toLowerCase())){
+                    this.livraisons.push(el)
+                } 
+                else if (el.exportateur.prenom.toLowerCase().includes(searchString.toLowerCase())){
+                    this.livraisons.push(el)
+                } 
+                else if (el.chargement.nb_fiche.toLowerCase().includes(searchString.toLowerCase())){
+                    this.livraisons.push(el)
+                } 
+                else if (el.chargement.produit.toLowerCase().includes(searchString.toLowerCase())){
+                    this.livraisons.push(el)
+                } 
+                 
+            })
+        },
+        refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getLivraisonList()
+
+        },
         // getLivraisonList() {
 
         //     window.models.Livraison.find({})
@@ -203,16 +243,16 @@ export default {
             livraisonModal.hide()
 
         },
-        infoLivraison(dep) {
+        infoLivraison(liv) {
             this.modalAction = 'detail'
-            this.currentDep = dep
-            if (this.currentDep.magasin) {
-                // window.models.Magasin.findone({_id: this.currentDep.magasin})
+            this.currentLiv = liv
+            if (this.currentLiv.magasin) {
+                // window.models.Magasin.findone({_id: this.currentLiv.magasin})
                 // .then(doc => {
                 //     doc.populate()
                 // })
 
-                this.currentDep.populate('magasin')
+                this.currentLiv.populate('magasin')
                     .then((res) => {
                         console.log(res)
                     })
@@ -220,24 +260,24 @@ export default {
             }
             this.launchModal()
         },
-        deleteLivraison(dep, msg) {
+        deleteLivraison(liv, msg) {
             this.modalAction = 'delete'
 
             if (msg == 'warnDeletion') {
                 this.modalText = 'Vous êtes sur le point de supprimer un depasin. êtes vous sur de vouloir le faire? cette action est irreversible'
-                var date = dep.date.toLocaleDateString()
-                dep.date = date
-                this.currentDep = dep
+                var date = liv.date.toLocaleDateString()
+                liv.date = date
+                this.currentLiv = liv
 
                 this.launchModal()
             } else if (!msg) {
-                if (dep.motif) {
+                if (liv.motif) {
                     this.operation.nom = 'delete'
                     window.models.Livraison.deleteOne({
-                            _id: dep._id
+                            _id: liv._id
                         })
                         .then((res) => {
-                            this.hideModal()
+                            
                             console.log(res)
                             this.alertMessage = 'Livraison supprimé avec succès.'
                             this.operation.status = true

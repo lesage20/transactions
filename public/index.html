@@ -11,6 +11,14 @@
         <%= htmlWebpackPlugin.options.title %>
     </title>
     <style>
+        @font-face {
+            font-family: 'monospace';
+            font-style: normal;
+            font-weight: 400;
+            src: local('monospace Regular'), local('monospace-Regular');
+            font-display: swap;
+        }
+
         .bg-gray {
             background-color: rgb(238, 236, 236) !important;
 
@@ -46,11 +54,25 @@
     <noscript>
         <strong>
             Nous sommes désolé mais <%= htmlWebpackPlugin.options.title %> ne fonctionne pas sans javascript activé.
-            Svp activez le pour continuer.
+                Svp activez le pour continuer.
         </strong>
     </noscript>
     <div class="container-fluid" id="app"></div>
     <!-- built files will be auto injected -->
+    <script>
+        Date.prototype.getWeek = function () {
+            var target = new Date(this.valueOf());
+            var dayNr = (this.getDay() + 6) % 7;
+            target.setDate(target.getDate() - dayNr + 3);
+            var firstThursday = target.valueOf();
+            target.setMonth(0, 1);
+            if (target.getDay() != 4) {
+                target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+            }
+            return 1 + Math.ceil((firstThursday - target) / 604800000);
+        }
+
+    </script>
 </body>
 
 </html>

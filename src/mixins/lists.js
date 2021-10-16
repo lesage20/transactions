@@ -15,8 +15,30 @@ export default {
         }
     },
     methods: {
+        getDepenseList() {
+            window.models.Depense.find({})
+                .populate({
+                    path: 'magasin',
+                    model: window.models.Magasin,
+
+                })
+                .populate({
+                    path: 'pisteur',
+                    model: window.models.Pisteur,
+                })
+                .then((res) => {
+
+                    this.depenses = res
+                    this.depensesForSearch = res
+                    console.log('liste de depenses recuperé avec succès', res)
+
+                })
+                .catch((err) => {
+                    console.log(err)
+
+                })
+        },
         getChargementList(options) {
-            console.log(typeof options)
             if (typeof options == "object") {
                 window.models.Chargement.find(options)
                     .populate({
@@ -65,8 +87,13 @@ export default {
                         path: 'magasin',
                         model: window.models.Magasin
                     })
+                    .populate({
+                        path: 'pisteur',
+                        model: window.models.Pisteur
+                    })
                     .then((res) => {
                         this.chargements = res
+                        this.chgtsForSearch = res
                         console.log('liste de chargements  recuperée avec succès', res)
 
                     })
@@ -77,59 +104,175 @@ export default {
             }
 
         },
-        getLivraisonList() {
-            window.models.Livraison.find({})
-                .populate({
-                    path: 'chargement',
-                    model: window.models.Chargement,
+        getLivraisonList(searchString) {
 
-                })
-                .populate({
-                    path: 'exportateur',
-                    model: window.models.Exportateur,
-                })
-                .then((res) => {
+            if (!searchString) {
+                window.models.Livraison.find({})
+                    .populate({
+                        path: 'chargement',
+                        model: window.models.Chargement,
 
-                    this.livraisons = res
-                    console.log('liste de Livraison recuperé avec succès', res)
+                    })
+                    .populate({
+                        path: 'exportateur',
+                        model: window.models.Exportateur,
+                    })
+                    .then((res) => {
 
-                })
-                .catch((err) => {
-                    console.log(err)
+                        this.livraisons = res
+                        this.livraisonsForSearch = res
+                        console.log('liste de Livraison recuperé avec succès', res)
 
-                })
+                    })
+                    .catch((err) => {
+                        console.log(err)
+
+                    })
+            } else {
+                let isDate = "Invalid Date"
+                if (searchString.length > 4) {
+                    isDate = new Date(searchString)
+                }
+
+                if (isDate != "Invalid Date") {
+                    let DateStart = new Date(searchString + "T00:00:00.015Z").toISOString()
+                    let DateEnd = new Date(searchString + "T23:59:59.999Z").toISOString()
+                    console.log(DateStart)
+                    window.models.Livraison.find({ date: { "$gte": DateStart, "$lte": DateEnd } })
+                        .populate({
+                            path: 'chargement',
+                            model: window.models.Chargement,
+
+                        })
+                        .populate({
+                            path: 'exportateur',
+                            model: window.models.Exportateur,
+                        })
+                        .then((res) => {
+
+                            this.livraisons = res
+                            console.log('liste de Livraison recuperé avec succès', res)
+
+                        })
+                        .catch((err) => {
+                            console.log(err)
+
+                        })
+                } else {
+                    window.models.Livraison.find({ $text: { $search: searchString } })
+                        .populate({
+                            path: 'chargement',
+                            model: window.models.Chargement,
+
+                        })
+                        .populate({
+                            path: 'exportateur',
+                            model: window.models.Exportateur,
+                        })
+                        .then((res) => {
+
+                            this.livraisons = res
+                            console.log('liste de Livraison recuperé avec succès', res)
+
+                        })
+                        .catch((err) => {
+                            console.log(err)
+
+                        })
+                }
+
+            }
         },
-        getGerantList() {
-            this.magasins.forEach((el) => {
-                el.gerants.forEach((ger) => {
-                    ger.magasin = el.nom
-                    this.gerants.push(ger)
-                })
+        getGerantList(searchString) {
+            this.gerants = []
+            if (!searchString) {
+                window.models.Magasin.find({})
+                    .then((res) => {
+                        this.magasins = res
+                        res.forEach((el) => {
+                            el.gerants.forEach((ger) => {
+                                ger.magasin = el.nom
+                                this.gerants.push(ger)
+                            })
 
-            })
-            this.gerants.forEach((el) => {
-                console.log(el)
-            })
+                        })
+                        console.log("liste de magasins recuperée avec succès")
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                    })
+            }
+            else {
+
+                window.models.Magasin.find({ $text: { $search: searchString } })
+                    .then((res) => {
+                        this.magasins = res
+
+                        res.forEach((el) => {
+
+                            el.gerants.forEach((ger) => {
+                                ger.magasin = el.nom
+                                console.log(ger.magasin)
+                                if (ger.nom.toLowerCase().includes(searchString.toLowerCase())) {
+                                    this.gerants.push(ger)
+                                }
+                                else if (ger.prenom.toLowerCase().includes(searchString.toLowerCase())) {
+                                    this.gerants.push(ger)
+                                }
+                                else if (ger.telephone.toLowerCase().includes(searchString.toLowerCase())) {
+                                    this.gerants.push(ger)
+                                }
+                                else if (ger.magasin.toLowerCase().includes(searchString.toLowerCase())) {
+                                    this.gerants.push(ger)
+                                }
+
+
+                            })
+
+                        })
+                        console.log("liste gerant dans recherche recuperée avec succès")
+
+                    })
+                    .catch((err) => {
+                        console.log(err)
+
+                    })
+            }
+
 
         },
-        getProduitList() {
-            this.magasins.forEach((el) => {
-                el.produits.forEach((prod) => {
-                    prod.magasin = el.nom
-                    this.produits.push(prod)
+        getProduitList(searchString) {
+            if (!searchString) {
+                this.produits = []
+                this.produitsForSearch = []
+                this.magasins.forEach((el) => {
+                    el.produits.forEach((prod) => {
+                        prod.magasin = el.nom
+                        this.produits.push(prod)
+                        this.produitsForSearch.push(prod)
+                    })
+
+
                 })
+                this.independantPisteurs.forEach((el) => {
+                    el.produits.forEach((prod) => {
+                        prod.pisteur = el.nom + ' ' + el.prenom
+                        this.produits.push(prod)
+                        this.produitsForSearch.push(prod)
+                    })
 
 
-            })
-            this.produits.forEach((el) => {
-                console.log(el)
-            })
+                })
+                this.produits.forEach((el) => {
+                    console.log(el)
+                })
+            }
 
         },
         getReceptionList(searchString) {
             if (!searchString) {
                 window.models.Transaction.find({})
-                .populate({path: 'exportateur', model: window.models.Exportateur})
+                    .populate({ path: 'exportateur', model: window.models.Exportateur })
                     .exec((err, docs) => {
                         if (err) {
                             console.log(err)
@@ -137,6 +280,7 @@ export default {
                         }
 
                         this.receptions = docs
+                        this.receptionsForSearch = docs
                         console.log("liste de receptions recuperée avec succès", docs)
                     })
 
@@ -156,7 +300,7 @@ export default {
                             "$lte": DateEnd
                         },
                         type: "reception"
-                    }).populate({path: 'exportateur', model: window.models.Exportateur})
+                    }).populate({ path: 'exportateur', model: window.models.Exportateur })
                         .then((res) => {
                             if (res.length) {
                                 this.receptions = res
@@ -178,7 +322,7 @@ export default {
                         },
 
                     })
-                    .populate({path: 'exportateur', model: window.models.Exportateur})
+                        .populate({ path: 'exportateur', model: window.models.Exportateur })
                         .then((res) => {
                             this.receptions = res
                             console.log("liste de recu recuperée avec succès")
@@ -188,6 +332,7 @@ export default {
                             console.log(err)
 
                         })
+
                 }
             }
         },
@@ -206,12 +351,15 @@ export default {
             window.models.Pisteur.find({})
                 .then((docs) => {
                     this.pisteurs = docs
+                    this.pisteursForSearch = docs
                     for (var i in this.magasins) {
                         this.magasins[i].pisteurs.forEach(pist => {
                             pist.magasin = this.magasins[i].nom
                             this.pisteurs.push(pist)
+                            // this.pisteursForSearch.push(pist)
                         })
                     }
+                    
                 })
                 .catch(err => {
                     console.log(err)
@@ -273,17 +421,35 @@ export default {
             }
 
         },
-        getIndependantPisteurList() {
-            window.models.Pisteur.find({})
-                .then((res) => {
-                    this.independantPisteurs = res
-                    console.log('liste de pisteurs independant recuperée avec succès')
+        getIndependantPisteurList(searchString) {
+            if (!searchString) {
+                window.models.Pisteur.find({})
+                    .then((res) => {
+                        this.independantPisteurs = res
+                        console.log('liste de pisteurs independant recuperée avec succès')
 
-                })
-                .catch((err) => {
-                    console.log(err)
+                    })
+                    .catch((err) => {
+                        console.log(err)
 
-                })
+                    })
+            } else {
+                {
+                    console.log('search string really string')
+
+                    window.models.Pisteur.find({ $text: { $search: searchString } })
+                        .then((res) => {
+                            this.independantPisteurs = res
+                            console.log('liste de pisteurs independant recuperée avec succès')
+
+                        })
+                        .catch((err) => {
+                            console.log(err)
+
+                        })
+                }
+
+            }
 
         },
         getMagasinList(searchString) {
@@ -293,12 +459,9 @@ export default {
                     .then((res) => {
                         this.magasins = res
                         console.log("liste de magasins recuperée avec succès")
-
-
                     })
                     .catch((err) => {
                         console.log(err)
-
                     })
             } else {
                 let isDate = "Invalid Date"

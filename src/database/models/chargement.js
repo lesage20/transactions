@@ -49,6 +49,10 @@ const chargementSchema = new Schema({
     status: {
         type: String,
         required: true
+    },
+    util: {
+        type: Boolean,
+        required: true
     }
 
 }, {timestamps: true, collection: 'chargement'})

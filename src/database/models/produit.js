@@ -14,6 +14,10 @@ const produitSchema = new Schema({
         type: Number,
         required: true
     },
+    util: {
+        type: Boolean,
+        required: true
+    }
 
 
 }, {timestamps: true})

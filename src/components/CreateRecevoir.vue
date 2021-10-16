@@ -69,7 +69,8 @@ export default {
                     montant: this.montant,
                     exportateur: this.exportateur,
                     type: 'reception',
-                    date: this.date
+                    date: this.date,
+                    util: false
 
                 })
                 .then((res) => {
@@ -89,6 +90,7 @@ export default {
                         .then((doc) => {
                             console.log('exportateur: ', doc)
                             doc.solde += res.montant
+                            doc.util = true
                             doc.save((err, dc) => {
                                 if (err) console.log(err)
                                 else console.log('success: ', dc)

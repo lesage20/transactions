@@ -1,5 +1,20 @@
 <template>
 <div>
+    <div id="context-menu">
+        <div class="context-title text-center mb-2">
+            <strong>Actions</strong>
+            <hr style="padding: 2px; margin:1px">
+        </div>
+        <div class="item" @click="infoDepense(currentDep)">
+            <i class="bi bi-info-circle-fill"></i> Info
+        </div>
+        <div class="item" @click="launchModal(currentDep, 'update')">
+            <i class="bi bi-pencil-fill"></i> Modifier
+        </div>
+        <div class="item" @click="deleteDepense(currentDep, 'warnDeletion')">
+            <i class="bi bi-trash-fill"></i> Supprimer
+        </div>
+    </div>
     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -21,7 +36,6 @@
                             <label for="date">Date de depense</label>
                             <input v-model="currentDep.date" type="date" class="form-control" id="date" placeholder="Entrez  la date a laquelle vouuuuuuuus avez depensé l'argent">
                         </div>
-                        
 
                     </form>
                 </div>
@@ -92,7 +106,7 @@
         <div class="d-flex justify-content-end my-1">
             <div class="btn-group text-center  shadow-sm rounded">
                 <button @click="searchBool = !searchBool" class="btn btn-primary"> <i class="bi bi-search"></i> </button>
-                <button @click="printDocument('list', 'exportateurs')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
+                <button @click="printDocument('list', 'depenses')" class="btn btn-secondary"><i class="bi bi-printer"></i></button>
                 <button class="btn btn-warning" @click="refresh()">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
@@ -106,7 +120,7 @@
                 <div class="col-md-8  pe-0">
                     <transition enter-active-class="animate__animated animate__fadeInDown animate__faster" leave-active-class="animate__animated animate__fadeOutUp animate__faster" mode="out-in">
                         <div v-if="searchBool">
-                            <input @keyup.enter="getExportateurList(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
+                            <input @keyup.enter="searchDepense(search)" v-model="search" type="text" name="search" id="search" class="form-control " placeholder="Rechechez un exportateur par son nom, prenom, addresse ou numero de telephone">
                         </div>
                     </transition>
 
@@ -121,11 +135,11 @@
                             <th>Montant</th>
                             <th>Receveur</th>
                             <th>Date</th>
-                            <th>Actions</th>
+                           
                         </tr>
                     </thead>
                     <transition-group tag="tbody" mode="out-in" name="slide">
-                        <tr class="" v-for="(dep, index) in depenses" :key="dep.id" @dblclick="infoDepense(dep)">
+                        <tr class="" v-for="(dep, index) in depenses" :key="dep.id" @dblclick="infoDepense(dep)" @contextmenu="contextMenu($event, dep)">
                             <th> {{index+1}}</th>
                             <td class="col-md-4 px-2 ">{{dep.motif}} </td>
 
@@ -134,21 +148,7 @@
                             <td class="col-md-3 px-2 " v-if="dep.pisteur != undefined">{{dep.pisteur.nom}} {{dep.pisteur.prenom}}</td>
                             <td class="col-md-3 px-2 ">{{dep.date.toLocaleDateString()}}</td>
 
-                            <td>
-                                <div class="btn-group">
-                                    <button @click="infoDepense(dep)" class="btn text-info">
-                                        <i class="bi bi-info-circle"></i>
-                                    </button>
-
-                                    <button @click="launchModal(dep, 'update')" class="btn text-primary">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-
-                                    <button @click="deleteDepense(dep, 'warnDeletion')" class="btn text-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
+                            
                         </tr>
                     </transition-group>
 
@@ -188,45 +188,74 @@ export default {
     created() {
         this.getMagasinList()
         this.getDepenseList()
+        window.addEventListener('click', () => {
+            document.getElementById("context-menu").classList.remove('active')
+        })
     },
     computed: {
         depenseCounter() {
             return this.depenses.length
+        },
+        allDepenses() {
+            return this.depensesForSearch
         }
     },
     methods: {
+        contextMenu(event, dep) {
 
-        getDepenseList() {
+            this.currentDep = dep
+            //    this.context = true
+            const context_menu = document.getElementById("context-menu")
+            context_menu.classList.remove('active')
+            context_menu.style.top = event.target.getBoundingClientRect().top + event.offsetY + "px"
+            context_menu.style.left = event.target.getBoundingClientRect().left + event.offsetX + "px"
+            context_menu.classList.add('active')
 
-            window.models.Depense.find({})
-                .populate({
-                    path: 'magasin',
-                    model: window.models.Magasin,
-
-                })
-                .populate({
-                    path: 'pisteur',
-                    model: window.models.Pisteur,
-                })
-                .then((res) => {
-
-                    this.depenses = res
-                    console.log('liste de depenses recuperé avec succès', res)
-
-                })
-                .catch((err) => {
-                    console.log(err)
-
-                })
         },
+        searchDepense(searchString) {
+            console.log(searchString)
+            let depenses = this.allDepenses
+            this.depenses = []
+            depenses.forEach((el) => {
+                console.log(el)
+                if (el.motif.toLowerCase().includes(searchString.toLowerCase())) {
+                    this.depenses.push(el)
+                } else if (el.montant.toString().includes(searchString)) {
+                    this.depenses.push(el)
+                }
+
+                if (this.depenses.indexOf(el) == -1) {
+                    if (el.magasin) {
+                        if (el.magasin.nom.toLowerCase().includes(searchString.toLowerCase())) {
+                            this.depenses.push(el)
+                        }
+                    }
+                }
+                if (this.depenses.indexOf(el) == -1) {
+
+                    if (el.pisteur) {
+                        if (el.pisteur.nom.toLowerCase().includes(searchString.toLowerCase())) {
+                            this.depenses.push(el)
+                        }
+                    }
+                }
+            })
+        },
+        refresh() {
+            this.searchBool = false
+            this.search = null
+            this.getDepenseList()
+
+        },
+        
         launchModal(dep, name) {
             if (!name) {
                 var myModal = document.getElementById('depenseModal')
 
-            const depenseModal = new bootstrap.Modal(myModal, {
-                keyboard: false
-            })
-            depenseModal.show()
+                const depenseModal = new bootstrap.Modal(myModal, {
+                    keyboard: false
+                })
+                depenseModal.show()
 
             } else {
                 this.currentDep = dep
@@ -234,7 +263,7 @@ export default {
                 const updateModal = new bootstrap.Modal(myModal, {
                     keyboard: false
                 })
-                
+
                 updateModal.show()
 
             }
@@ -266,10 +295,15 @@ export default {
                 this.currentDep = dep
 
                 this.launchModal()
-            } 
-            else if (!msg) {
+            } else if (!msg) {
                 console.log(dep, this.currentDep)
                 if (dep) {
+
+                    if (dep.util ) {
+                        this.modalText = 'Cette depense ne peut être supprimée car elle contient deja un chargement supprimez le chargement et reessayé'
+                        this.launchModal('echec')
+                        return
+                    }
                     this.operation.nom = 'delete'
                     window.models.Depense.deleteOne({
                             _id: dep._id

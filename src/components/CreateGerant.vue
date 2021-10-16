@@ -89,6 +89,7 @@ export default {
                                 prenom: this.prenom,
                                 telephone: this.telephone
                             })
+                        doc.util = true
                             doc.save()
                             .then((res) => {
                                 console.log(res)
