@@ -84,8 +84,8 @@
                                 <div class="" v-if="currentChgt.magasin">
                                     Magasin : {{currentChgt.magasin.nom}}
                                 </div>
-                                <div class="" v-if="!currentChgt.magasin">
-                                    Pisteur: {{currentChgt.pisteur}}
+                                <div class="" v-if="currentChgt.pisteur">
+                                    Pisteur: {{currentChgt.pisteur.nom}} {{currentChgt.pisteur.prenom}}
                                 </div>
                                 <div class="">
                                     Prix Total : {{currentChgt.prix_total}} FCFA

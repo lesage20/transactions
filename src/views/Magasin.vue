@@ -5,8 +5,8 @@
         <h5 class="text-center" v-else id="titlle">Liste des magasin</h5>
         <div class="d-flex justify-content-center">
             <div class="btn-group text-center  ">
-                 <button @click="editAction('lister')" class="btn btn-primary"> <i class="bi bi-list"></i> Lister </button>
-                <button @click="editAction('ajouter')" class="btn btn-success"> <i class="bi bi-plus-lg"></i> Ajouter </button> <!-- data-bs-toggle='collapse' data-bs-target='#Ajout' -->
+                 <button @click="editAction('lister')" class="btn btn-primary"> Lister </button>
+                <button @click="editAction('ajouter')" class="btn btn-success"> Ajouter </button> <!-- data-bs-toggle='collapse' data-bs-target='#Ajout' -->
             </div>
         </div>
     </div>

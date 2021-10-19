@@ -55,8 +55,8 @@
                 <div class="modal-body">
                     <div class="row d-flex justify-content-start" v-if="modalAction=='detail'">
                         <div class="p-2    mb-3 rounded-end fs-4">
-                            <p>
-                                exportateur: {{currentRecep.exportateur}} <br>
+                            <p v-if="currentRecep">
+                                exportateur: <span v-if="currentRecep.exportateur"> {{currentRecep.exportateur.nom}} {{currentRecep.exportateur.prenom}} </span><br>
                                 Montant : {{currentRecep.montant}} FCFA<br>
                                 Date : {{ date }}
 

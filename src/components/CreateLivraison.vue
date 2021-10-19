@@ -1,5 +1,5 @@
 <template>
-<div id='Ajout' class="">
+<div id='Ajout' class="d-flex justify-content-center">
     <div class="modal" tabindex="-1" id="livraisonModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -19,8 +19,8 @@
         </div>
     </div>
 
-    <form @submit.prevent="createLivraison">
-        <div class="form-group p-2">
+    <form @submit.prevent="createLivraison" class="d-flex justify-content-center flex-wrap col-md-5" >
+        <div class="form-group p-2 col-md-12">
             <label for="chargement">Chargement </label>
             <select name="chargement" id="chargement" v-model="chargement" class="form-select form-control">
                 <option :value="chgt._id" v-for="chgt in chargements" :key="chgt">
@@ -29,7 +29,7 @@
             </select>
         </div>
 
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="exportateur">Exportateur ou usine</label>
             <select name="chargement" id="chargement" v-model="exportateur" class="form-select form-control">
                 <option :value="exp._id" v-for="exp in exportateurs" :key="exp">
@@ -37,12 +37,12 @@
                 </option>
             </select>
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="date">Date</label>
             <input v-model="date" type="date" class="form-control" id="date" placeholder="Entrez date de livraison">
         </div>
 
-        <div class="form-group p-2 d-flex justify-content-end">
+        <div class="form-group p-2 col-md-12 d-flex justify-content-end">
             <div>
                 <button type="submit" class="btn btn-primary">Enregistrer <i class="bi bi-save2"></i></button>
             </div>

@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="d-flex justify-content-center">
     <div class="modal" tabindex="-1" id="depenseModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -19,20 +19,20 @@
         </div>
     </div>
 
-    <form>
-        <div class="form-group p-2">
+    <form class="d-flex justify-content-center flex-wrap col-md-5" >
+        <div class="form-group p-2 col-md-12">
             <label for="motif">Motif de la depense </label>
             <input v-model="motif" type="text" class="form-control" id="motif" aria-describedby="motifHelp" placeholder="Entrez le motif de la depense">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="montant">Montant de la depense</label>
             <input v-model="montant" type="number" class="form-control" id="montant" placeholder="Entrez le montant pour la depense">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="date">Date de la depense</label>
             <input v-model="date" type="date" class="form-control" id="date" placeholder="Entrez la date a laquelle la depense a été effectuée">
         </div>
-        <div class="form-group px-2 ">
+        <div class="form-group p-2 col-md-12">
             <p class="mb-0">
                 Qui fait la depense un pisteur independant ou un magasin ?
             </p>
@@ -50,7 +50,7 @@
 
         </div>
 
-        <div class="form-group p-2" v-if="depenseur=='magasin'">
+        <div class="form-group p-2 col-md-12" v-if="depenseur=='magasin'">
             <label for="magasin">Le magasin concerné</label>
             <!-- <input v-model="magasin" type="phone" class="form-control" id="magasin" placeholder="Entrez le nom du magasin concerné"> -->
             <select name="magasin" id="magasin" v-model="magasin" class="form-select text-muted">
@@ -59,7 +59,7 @@
                 </option>
             </select>
         </div>
-        <div class="form-group p-2" v-if="depenseur=='pisteur'">
+        <div class="form-group p-2 col-md-12" v-if="depenseur=='pisteur'">
             <label for="magasin">Le pisteur concerné</label>
             <!-- <input v-model="magasin" type="phone" class="form-control" id="magasin" placeholder="Entrez le nom du magasin concerné"> -->
             <select name="pisteur" id="pisteur" v-model="pisteur" class="form-select text-muted">
@@ -69,7 +69,7 @@
             </select>
         </div>
 
-        <div class="form-group p-2 d-flex justify-content-end">
+        <div class="form-group p-2 col-md-12 d-flex justify-content-end">
             <div>
                 <button @click.prevent='createDepense' type="submit" class="btn btn-success">Enregistrer</button>
             </div>

@@ -1,5 +1,5 @@
 <template>
-<div id='Ajout' class="">
+<div id='Ajout' class="d-flex justify-content-center">
     <div class="modal" tabindex="-1" id="exportateurModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -19,25 +19,25 @@
         </div>
     </div>
 
-    <form @submit.prevent="createExportateur">
-        <div class="form-group p-2">
+    <form @submit.prevent="createExportateur" class="d-flex justify-content-center flex-wrap col-md-5" >
+        <div class="form-group p-2 col-md-12">
             <label for="nom">Nom </label>
             <input v-model="nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du partenaire">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="prenom">Prenoms</label>
             <input v-model="prenom" type="text" class="form-control" id="prenom" placeholder="Entrez le/les prenom(s) du Exportateur">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="addresse">Addresse de l'exportateur</label>
             <input v-model="addresse" type="text" class="form-control" id="addresse" placeholder="Entrez  l'addresse de l'exportateur">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="telephone">Numero de telephone de l'exportateur</label>
             <input v-model="telephone" type="text" class="form-control" id="telephone" placeholder="Entrez le numero de telephone de l'exportateur">
         </div>
 
-        <div class="form-group p-2 d-flex justify-content-end">
+        <div class="form-group p-2 col-md-12 d-flex justify-content-end">
             <div>
                 <button type="submit" class="btn btn-primary">Enregistrer <i class="bi bi-save2"></i></button>
             </div>

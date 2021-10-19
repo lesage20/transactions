@@ -1,5 +1,5 @@
 <template>
-<div >
+<div class="d-flex justify-content-center">
     <div class="modal" tabindex="-1" id="magasinModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -18,32 +18,34 @@
             </div>
         </div>
     </div>
-    <form @submit.prevent>
-        <div class="form-group p-2">
+
+    <form @submit.prevent  class="d-flex justify-content-center flex-wrap col-md-5" >
+        <div class="form-group p-2 col-md-12">
             <label for="name">Nom </label>
             <input v-model="nom" type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="Entrez le nom du magazin">
-            
+
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="code">Code du Magasin</label>
             <input v-model="code" type="text" class="form-control" id="code" placeholder="Entrez le code du magasin">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="ville">Ville du Magasin</label>
             <input v-model="ville" type="text" class="form-control" id="ville" placeholder="Entrez la ville ou le magasin se situe">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="addresse">Addresse du Magasin</label>
             <input v-model="addresse" type="text" class="form-control" id="addresse" placeholder="Entrez l'addresse du magasin">
         </div>
 
-        <div class="form-group p-2 d-flex justify-content-end">
+        <div class="form-group p-2  col-md-12 d-flex justify-content-end ">
             <div>
                 <button @click.prevent="createMagasin" type="submit"  class="btn btn-success">Enregistrer le magasin</button>
             </div>
 
         </div>
     </form>
+   
 </div>
 </template>
 

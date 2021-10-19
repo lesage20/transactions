@@ -1,5 +1,5 @@
 <template>
-<div class="row shadow-sm bg-white">
+<div class="d-flex justify-content-center">
     <div class="modal" tabindex="-1" id="chargementModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -18,16 +18,16 @@
             </div>
         </div>
     </div>
-    <form>
-        <div class="form-group p-2">
+    <form class="d-flex justify-content-center flex-wrap col-md-5" >
+        <div class="form-group p-2 col-md-12">
             <label for="montant">Montant </label>
             <input v-model="montant" type="number" class="form-control" id="montant" aria-describedby="montantHelp" placeholder="Entrez la somme à recevoir">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="date">Date </label>
             <input v-model="date" type="date" class="form-control" id="date" aria-describedby="dateHelp" placeholder="Entrez la date de reception">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="exportateur">Exportateur</label>
             <!-- <input type="text" class="form-control" id="exportateur" placeholder="veuillez choisir l'exportateur qui envoie l'argent"> -->
             <select v-model="exportateur" name="exportateur" id="exportateur" class="form-select">
@@ -36,7 +36,7 @@
                 </option>
             </select>
         </div>
-        <div class="form-group p-2 d-flex justify-content-end">
+        <div class="form-group p-2 col-md-12 d-flex justify-content-end">
             <div>
                 <button type="submit" @click.prevent="recevoir()" class="btn btn-success">Recevoir</button>
             </div>

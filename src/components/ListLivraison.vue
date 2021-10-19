@@ -29,10 +29,10 @@
 
                             <div class=" justify-content-center ">
                                 <div class="" v-if="currentLiv.exportateur!=null">
-                                    Exportateur : {{currentLiv.exportateur}}
+                                    Exportateur : {{currentLiv.exportateur.nom}} {{currentLiv.exportateur.prenom}}
                                 </div>
-                                <div class="">
-                                    Chargement : {{currentLiv.chargement}}
+                                <div class="" v-if="currentLiv.chargement!=null && currentLiv.chargement!=undefined">
+                                    Chargement : {{currentLiv.chargement.nb_fiche}}
                                 </div>
                                 <div class="">
                                     Date : {{currentLiv.date.toLocaleDateString()}}

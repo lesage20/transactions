@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="d-flex justify-content-center">
     <div class="modal" tabindex="-1" id="produitModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -19,21 +19,21 @@
         </div>
     </div>
 
-    <form @submit.prevent="createProduit">
-        <div class="form-group p-2">
+    <form @submit.prevent="createProduit" class="d-flex flex-wrap justify-content-center col-md-6">
+        <div class="form-group p-2 col-md-12">
             <label for="nom">Nom </label>
             <input v-model="nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du produit">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="prixAchat">Prix d'achat pour 1 Kg</label>
             <input v-model="prixAchat" type="number" class="form-control" id="prixAchat" placeholder="Entrez le prix d'achat(s) pour 1 Kg">
         </div>
 
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="benefice">Benefice </label>
             <input v-model="benefice" type="text" class="form-control" id="benefice" placeholder="Entrez le benefice que vous voulez gagner sur ce produit">
         </div>
-        <div class="form-group px-2 ">
+        <div class="form-group p-2 col-md-12 ">
             <p class="mb-0">
                 Qui est le proprietaire du produit un pisteur independant ou un magasin ?
             </p>
@@ -51,13 +51,13 @@
 
         </div>
 
-        <div class="form-group p-2" v-if="proprio ==  'magasin'">
+        <div class="form-group p-2 col-md-12" v-if="proprio ==  'magasin'">
             <label for="magasin">Magasin</label>
             <select v-model="magasin" name="magasin" id="magasin" class="form-select text-muted">
                 <option :value="mag.nom" v-for="mag in magasins" :key="mag.id">{{ mag.nom }}</option>
             </select>
         </div>
-        <div class="form-group p-2" v-else>
+        <div class="form-group p-2 col-md-12" v-else>
 
             <label for="pisteur">Pisteur</label>
             <select v-model="pisteur" name="pisteur" id="pisteur" class="form-select text-muted">
@@ -65,7 +65,7 @@
             </select>
         </div>
 
-        <div class="form-group p-2 d-flex justify-content-end">
+        <div class="form-group p-2 col-md-12 d-flex justify-content-end">
             <div>
                 <button type="submit" class="btn btn-success">Enregistrer</button>
             </div>

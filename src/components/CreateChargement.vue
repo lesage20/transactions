@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="d-flex justify-content-center">
     <div class="modal" tabindex="-1" id="chargementModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -19,25 +19,25 @@
         </div>
     </div>
 
-    <form @submit.prevent="createChargement">
-        <div class="form-group p-2">
+    <form @submit.prevent="createChargement" class="d-flex justify-content-center flex-wrap col-md-10" >
+        <div class="form-group p-2 col-md-6">
             <label for="nb_fiche">N° fiche de chargement </label>
             <input v-model="nb_fiche" type="text" class="form-control" id="nb_fiche" placeholder="Entrez le numero de la fiche de chargement">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-6">
             <label for="date">Date de chargement</label>
             <input v-model="date" type="date" class="form-control" id="date" placeholder="Entrez la date de chargement">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-6">
             <label for="poid_brut">Poids brut du chargement (Kg)</label>
             <input v-model="poid_brut" type="number" class="form-control" id="poid_brut" placeholder="Entrez le poids brut du chargement en Kg">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-6">
             <label for="nb_sac">Nombre de sacs</label>
             <input v-model="nb_sac" type="number" class="form-control" id="nb_sac" placeholder="Entrez le nombre de sacs">
         </div>
 
-        <div class="form-group px-2 ">
+        <div class="form-group p-2 col-md-6">
             <p class="mb-0">
                 Qui fait le chargement un pisteur independant ou un magasin ?
             </p>
@@ -55,7 +55,7 @@
 
         </div>
 
-        <div class="form-group p-2" v-if="chargeur=='magasin'">
+        <div class="form-group p-2 col-md-6" v-if="chargeur=='magasin'">
             <label for="magasin">Le magasin concerné</label>
             <select name="magasin" @change="getProduitParChargeur('magasin')" id="magasin" v-model="magasin" class="form-select text-muted">
                 <option :value="mag._id" v-for="mag in magasins" :key="mag._id">
@@ -63,7 +63,7 @@
                 </option>
             </select>
         </div>
-        <div class="form-group p-2" v-if="chargeur=='pisteur'">
+        <div class="form-group p-2 col-md-6" v-if="chargeur=='pisteur'">
             <label for="magasin">Le pisteur concerné</label>
             <select name="pisteur" @change="getProduitParChargeur('pisteur')" id="pisteur" v-model="pisteur" class="form-select text-muted">
                 <option :value="pisteur._id" v-for="pisteur in independantPisteurs" :key="pisteur._id">
@@ -71,11 +71,11 @@
                 </option>
             </select>
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-6">
             <label for="poid_net">Poids net du chargement (Kg)</label>
             <input v-model="poid_net" type="number" class="form-control" id="poid_net" placeholder="Entrez le poids net du chargement en Kg">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-6">
             <label for="produit">Produit contenu dans le chargement </label>
             <select name="produit" id="produit" v-model="produit" class="form-select text-muted">
                 <option :value="prod.nom" v-for="prod in produitsChargeur" :key="prod.nom">
@@ -83,15 +83,15 @@
                 </option>
             </select>
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-6">
             <label for="prix_kg">Prix par Kg (FCFA)</label>
             <input disabled v-model="prix_kg" type="number" class="form-control" id="prix_kg" placeholder="Entrez le prix pour 1 Kg  en FCFA">
         </div>
 
-        <div class="form-group p-2 d-flex justify-content-end">
-            <div>
-                <button type="submit" class="btn btn-success">Enregistrer Le chargement</button>
-            </div>
+        <div class="form-group p-2 col-md-6 d-flex justify-content-end mt-4">
+            
+                <button type="submit" class="btn btn-success btn-block col-md-12">Enregistrer Le chargement</button>
+            
 
         </div>
     </form>
@@ -195,7 +195,7 @@ export default {
                 this.modalText = 'Aucun champs ne peut contenir zero(0). Veuillez vérifier les informations renseignées et reessayez'
                 this.launchModal('echec')
                 return
-            }
+            } 
             
             if (this.chargeur == 'magasin') {
                 

@@ -135,9 +135,9 @@ export default {
         beneficePeSemaine() {
             let chgtSem = [];
             this.chargements.forEach(function (el) {
-                console.log(el.date.getWeek(), el.date);
-                if ((el.date.getWeek() == new Date().getWeek()) && (el.status == "livré")) {
-                    el.jour = el.date.getDay();
+                if ((el.updatedAt.getWeek() == new Date().getWeek()) && (el.status == "livré")) {
+                    el.jour = el.updatedAt.getDay();
+                    console.log('updated: ', el.updatedAt.getDay());
 
                     chgtSem.push(el);
                 }
@@ -413,7 +413,8 @@ export default {
                             "rgba(255, 206, 86, 1)",
                             "rgba(75, 192, 192, 1)",
                             "rgba(153, 102, 255, 1)",
-                            "rgba(255, 159, 64, 1)",
+                            "rgba(9, 129, 74, 1)",
+
                         ],
                         borderColor: [
                             "rgba(255, 99, 132, 1)",
@@ -421,7 +422,8 @@ export default {
                             "rgba(255, 206, 86, 1)",
                             "rgba(75, 192, 192, 1)",
                             "rgba(153, 102, 255, 1)",
-                            "rgba(255, 159, 64, 1)",
+                            "rgba(9, 129, 74, 1)",
+
                         ],
                         borderWidth: 1,
                     }, ],
@@ -447,14 +449,15 @@ export default {
                     labels: labels,
                     datasets: [{
                         label: "Bénéfice perçu",
-                        data: [this.BPLundi, this.BPMardi, this.BPMercredi, this.BPJeudi, this.BPVendredi],
+                        data: [this.BPLundi, this.BPMardi, this.BPMercredi, this.BPJeudi, this.BPVendredi,this.BPSamedi],
                         backgroundColor: [
                             "rgba(255, 99, 132, 1)",
                             "rgba(54, 162, 235, 1)",
                             "rgba(255, 206, 86, 1)",
                             "rgba(75, 192, 192, 1)",
                             "rgba(153, 102, 255, 1)",
-                            "rgba(255, 159, 64, 1)",
+                            "rgba(9, 129, 74, 1)",
+
                         ],
                         borderColor: [
                             "rgba(255, 99, 132, 1)",
@@ -462,7 +465,8 @@ export default {
                             "rgba(255, 206, 86, 1)",
                             "rgba(75, 192, 192, 1)",
                             "rgba(153, 102, 255, 1)",
-                            "rgba(255, 159, 64, 1)",
+                            "rgba(9, 129, 74, 1)",
+
                         ],
                         borderWidth: 1,
                     }, ],

@@ -1,5 +1,5 @@
 <template>
-<div >
+<div class="d-flex justify-content-center"> 
     <div class="modal" tabindex="-1" id="gerantModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -19,21 +19,21 @@
         </div>
     </div>
    
-    <form @submit.prevent="createGerant">
-        <div class="form-group p-2">
+    <form @submit.prevent="createGerant" class="d-flex justify-content-center flex-wrap col-md-6">
+        <div class="form-group p-2 col-md-12">
             <label for="nom">Nom </label>
             <input v-model="nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du partenaire">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="prenom">Prenoms</label>
             <input v-model="prenom" type="text" class="form-control" id="prenom" placeholder="Entrez le/les prenom(s) du gerant">
         </div>
        
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="telephone">Numero de telephone du gerant</label>
             <input v-model="telephone" type="text" class="form-control" id="telephone" placeholder="Entrez le numero de telephone du gerant">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
 
             <label for="magasin">Magasin</label>
             <select v-model="magasin" name="magasin" id="magasin" class="form-select text-muted">
@@ -43,7 +43,7 @@
  
 
 
-        <div class="form-group p-2 d-flex justify-content-end">
+        <div class="form-group p-2 col-md-12 d-flex justify-content-end">
             <div>
                 <button type="submit" class="btn btn-success">Enregistrer</button>
             </div>

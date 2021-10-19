@@ -1,5 +1,5 @@
 <template>
-<div class="">
+<div class="d-flex justify-content-center">
     <div class="modal" tabindex="-1" id="pisteurModal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -19,24 +19,24 @@
         </div>
     </div>
 
-    <form @submit.prevent="createPisteur">
-        <div class="form-group p-2">
+    <form @submit.prevent="createPisteur" class="d-flex justify-content-center flex-wrap col-md-6">
+        <div class="form-group p-2 col-md-12">
             <label for="nom">Nom </label>
             <input v-model="nom" type="text" class="form-control" id="nom" aria-describedby="nameHelp" placeholder="Entrez le nom du partenaire">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="prenom">Prenoms</label>
             <input v-model="prenom" type="text" class="form-control" id="prenom" placeholder="Entrez le/les prenom(s) du pisteur">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="nb_cni">Numero de la carte nationale d'identité</label>
             <input v-model="nb_cni" type="text" class="form-control" id="nb_cni" placeholder="Entrez le numero de la carte nationale d'identité du pisteur">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
             <label for="telephone">Numero de telephone du pisteur</label>
             <input v-model="telephone" type="text" class="form-control" id="telephone" placeholder="Entrez le numero de telephone du pisteur">
         </div>
-        <div class="form-group p-2">
+        <div class="form-group p-2 col-md-12">
 
             <label for="statut">Statut</label>
             <select v-model="statut" name="statut" id="statut" class="form-select">
@@ -44,7 +44,7 @@
                 <option value="independant">Independant</option>
             </select>
         </div>
-        <div class="form-group p-2" v-if="statut=='dependant'">
+        <div class="form-group p-2 col-md-12" v-if="statut=='dependant'">
 
             <label for="magasin">Magasin</label>
             <select v-model="magasin" name="magasin" id="magasin" class="form-select text-muted">
@@ -52,7 +52,7 @@
             </select>
         </div>
 
-        <div class="form-group p-2 d-flex justify-content-end">
+        <div class="form-group p-2 col-md-12 d-flex justify-content-end">
             <div>
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
             </div>
